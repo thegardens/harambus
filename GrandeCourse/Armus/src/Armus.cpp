@@ -37,8 +37,16 @@
 #define CONFIG_TOFS				0
 int adjd_dev;
 
+//MACRO fait par nous
+#define ANALOGUE_BRUIT			6
+#define ANALOGUE_5KZ			5
+
 //Variables globales
 float const cochesParCm = 2.6066666666666666666666666666666666666666;
+
+// Variable pour les sons de départ et fin
+float tempDebut5Khz(0);
+bool sonActif(0);
 
 //TODO: Ajuster les constantes;
 float  constanteProp = 1.6;
@@ -71,6 +79,8 @@ void AfficheRoue(infoRoue roue);
 void PidController(infoRoue& roue);
 void MesureRoue(infoRoue &roue);
 
+float detecte5khZ(void);
+
 int math_ABS(int a);
 void initialisationEncodeurs(void);
 void mesureDeCoche(void);
@@ -99,9 +109,35 @@ int main() //tester pour i plus grand que 1,5++
 	return 0;
 }
 
+float detecte5khZ()
+{
+//mesures
+	int bruit = ANALOG_Read(ANALOGUE_BRUIT);
+	int son = ANALOG_Read(ANALOGUE_5KZ);
+
+	if (bruit < son)
+	{
+		if (!sonActif) // part le chronomètre
+			tempDebut5Khz = SYSTEM_ReadTimerMSeconds();
+		sonActif = true;
+	}
+	else
+	{
+		if (sonActif)
+		{
+			sonActif = false;
+			return (SYSTEM_ReadTimerMSeconds() - tempDebut5Khz);
+		}
+	}
+	return 0;
+}
 
 void boucleParcours(void)
 {
+	while (detecte5khZ() < 1000)
+	{
+		THREAD_MSleep(100);
+	}
 	do
 	{
 		//TODO
@@ -123,17 +159,17 @@ void boucleParcours(void)
 
 
 		//Mesures
-		MesureRoue(Gauche);
-		MesureRoue(Droit);
+		//MesureRoue(Gauche);
+		//MesureRoue(Droit);
 
 
 		//Correction
-		PidController(Gauche);
-		PidController(Droit);
+		//PidController(Gauche);
+		//PidController(Droit);
 		//TEST
-		AfficheRoue(Gauche);
-		AfficheRoue(Droit);
-	}while(); //TODO Pas de son 5kHz
+		//AfficheRoue(Gauche);
+		//AfficheRoue(Droit);
+	}while(detecte5khZ() < 3500); //TODO Pas de son 5kHz
 }
 
 
