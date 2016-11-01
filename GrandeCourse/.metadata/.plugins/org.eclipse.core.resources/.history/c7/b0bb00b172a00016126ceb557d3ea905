@@ -61,8 +61,6 @@ struct infoRoue
 
 // Global Functions
 
-void boucleParcours(void);
-
 void Avancer(float distance,float temps);
 void Tourner(float radian, float temps, float rayon);//direction 1=gauche 0=droite
 void Reculer (float distance,float temps);
@@ -94,47 +92,17 @@ int color_Init(int& dev_handle);
 
 int main() //tester pour i plus grand que 1,5++
 {
-	boucleParcours();
 
+	//Mettre parcours ici!
+	Avancer(40,7);
+	Tourner(-PI,7,30);
+	Tourner(PI,7,30);
+	Reculer(15,7);
 	return 0;
 }
 
 
-void boucleParcours(void)
-{
-	do
-	{
-		//TODO
-		/*Faire boucle
-			 *
-			 * Mesure  des capteurs
-			 *
-			 * State -> selon la couleur
-			 *
-			 * Moteur real time
-			 *
-			 *
-			 *optionnel : chronomêtrer le temps que ça prends pour faire la boucle et la soustraire au THREAD_mSleep()
-			 * */
-		//Mesure
 
-
-		//Switch case
-
-
-		//Mesures
-		MesureRoue(Gauche);
-		MesureRoue(Droit);
-
-
-		//Correction
-		PidController(Gauche);
-		PidController(Droit);
-		//TEST
-		AfficheRoue(Gauche);
-		AfficheRoue(Droit);
-	}while(); //TODO Pas de son 5kHz
-}
 
 
 //Fonctions
@@ -181,7 +149,6 @@ void Avancer(float distance,float vitesse) // Vitesse : coches par secondes +/- 
 		//TEST
 		AfficheRoue(Gauche);
 		AfficheRoue(Droit);
-		// Ce n'est plus lui qui va gérer la condition de fin
 	} while ((math_ABS(Gauche.cocheParcourueTotal) < math_ABS(nbCocheParcours)) || (math_ABS(Droit.cocheParcourueTotal) < math_ABS(nbCocheParcours)));
 
 	MOTOR_SetSpeed(MOTOR_LEFT,0);
@@ -348,7 +315,7 @@ void PidController(infoRoue& roue)
 	roue.puissanceMoteur += P + I + D;
 
 	// Certaine conditions
-	if (math_ABS(roue.cocheAParcourir) < math_ABS(roue.cocheParcourueTotal)) //TODO à modifier pour fiter le real time
+	if (math_ABS(roue.cocheAParcourir) < math_ABS(roue.cocheParcourueTotal))
 		roue.puissanceMoteur = 0;
 	else if(roue.puissanceMoteur > 100)
 	{
@@ -363,7 +330,7 @@ void PidController(infoRoue& roue)
 	MOTOR_SetSpeed(roue.noMoteur,roue.puissanceMoteur);
 }
 
-void MesureRoue(infoRoue &roue) //TODO Adapter pour resetter les cycles entre chaque
+void MesureRoue(infoRoue &roue)
 {
 	roue.cycles++;
 	roue.valeurPrec = roue.ValeurLue;
@@ -390,7 +357,7 @@ int math_ABS(int a)
 }
 
 
-/*--------------Fonctions pour les capteurs-----------------------------------------------------------------------*/
+/*--------------Fonctions pour les capteurs---------------*/
 //Capteurs de couleurs
 void adjd_SetRegister(unsigned char reg, unsigned char val)
 {
