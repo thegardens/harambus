@@ -49,7 +49,7 @@ float tempDebut5Khz(0);
 bool sonActif(0);
 
 //TODO: Ajuster les constantes;
-float  constanteProp = 1.6;
+float  constanteProp = 1.0;
 float  constanteInteg = 0.3;
 float constanteDerive = 0;
 int updateTime = 250;
@@ -64,7 +64,7 @@ struct infoRoue
 	int noMoteur;
 	int valeurPrec;
 	int cocheAParcourir;
-};
+} moteurGauche,moteurDroit;
 
 
 // Global Functions
@@ -72,12 +72,14 @@ struct infoRoue
 void boucleParcours(void);
 
 void Avancer(float distance,float temps);
+void Avancer(float vitesse);
 void Tourner(float radian, float temps, float rayon);//direction 1=gauche 0=droite
 void Reculer (float distance,float temps);
 
 void AfficheRoue(infoRoue roue);
 void PidController(infoRoue& roue);
 void MesureRoue(infoRoue &roue);
+void resetRoue(infoRoue &roue);
 
 float detecte5khZ(void);
 
@@ -102,8 +104,10 @@ void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& data_clear);
 int color_Init(int& dev_handle);
 
-int main() //tester pour i plus grand que 1,5++
+int main()
 {
+
+	//TODO: thread pour jammer les autres avec le capteur infrarouge
 	boucleParcours();
 
 	return 0;
@@ -126,7 +130,7 @@ float detecte5khZ()
 		if (sonActif)
 		{
 			sonActif = false;
-			return (SYSTEM_ReadTimerMSeconds() - tempDebut5Khz);
+			return (SYSTEM_ReadTimerMSeconds() - tempDebut5Khz); // retourne le temps que le son à été émis
 		}
 	}
 	return 0;
@@ -134,13 +138,26 @@ float detecte5khZ()
 
 void boucleParcours(void)
 {
+
+	/*----Initiation----*/
+	ENCODER_Read(ENCODER_LEFT);
+	ENCODER_Read(ENCODER_RIGHT);
+	resetRoue(moteurDroit);
+	resetRoue(moteurGauche);
+
+	moteurGauche.noMoteur = MOTOR_LEFT;
+	moteurDroit.noMoteur = MOTOR_RIGHT;
+
+	/*----Attente du départ----*/
 	while (detecte5khZ() < 1000)
 	{
 		THREAD_MSleep(100);
 	}
+
+	/*----Parcours en tant que tel----*/
 	do
 	{
-		//TODO
+		//TODO faire boucle
 		/*Faire boucle
 			 *
 			 * Mesure  des capteurs
@@ -156,26 +173,36 @@ void boucleParcours(void)
 
 
 		//Switch case
-
+		Avancer(10);
 
 		//Mesures
-		//MesureRoue(Gauche);
-		//MesureRoue(Droit);
+		MesureRoue(moteurGauche);
+		MesureRoue(moteurDroit);
 
 
 		//Correction
-		//PidController(Gauche);
-		//PidController(Droit);
+		PidController(moteurGauche);
+		PidController(moteurDroit);
 		//TEST
-		//AfficheRoue(Gauche);
-		//AfficheRoue(Droit);
-	}while(detecte5khZ() < 3500); //TODO Pas de son 5kHz
+		AfficheRoue(moteurGauche);
+		AfficheRoue(moteurDroit);
+
+	}while(detecte5khZ() < 3500);
+	MOTOR_SetSpeed(MOTOR_LEFT,0);
+	MOTOR_SetSpeed(MOTOR_RIGHT,0);
+
 }
 
 
-//Fonctions
 
-//Marche
+void Avancer(float vitesse)
+{
+	moteurGauche.cocheAParcourir = 0xfffff;
+	moteurDroit.cocheAParcourir = 0xfffff;
+	moteurGauche.ValeurAttendue = vitesse * updateTime/1000.0 ;
+	moteurDroit.ValeurAttendue = vitesse * updateTime/1000.0;
+}
+
 void Avancer(float distance,float vitesse) // Vitesse : coches par secondes +/- 50
 {
 	//On met les compteurs à zéro
@@ -415,6 +442,15 @@ void AfficheRoue(infoRoue roue)
 	LCD_Printf("noMoteur : %d -> %.3f\nValeur Lue : %d\nValeur Attendue : %f\n",roue.noMoteur,roue.puissanceMoteur,roue.ValeurLue,roue.ValeurAttendue);
 }
 
+void resetRoue(infoRoue& roue) // TODO: savoir si l'on a de besoin de resetter puissance moteur
+{
+	roue.ValeurAttendue = 0;
+	roue.ValeurLue = 0;
+	roue.cocheAParcourir = 0xfffff;
+	roue.cocheParcourueTotal = 0;
+	roue.cycles = 0;
+	roue.valeurPrec = 0;
+}
 
 //Fonctions Mathématiques
 
