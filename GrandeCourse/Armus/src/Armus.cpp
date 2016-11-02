@@ -90,6 +90,8 @@ float detecte5khZ(void);
 
 int math_ABS(int a);
 void initialisationEncodeurs(void);
+
+void testCouleur(void);
 void mesureDeCoche(void);
 //Obsolete
 void TournerRayonNul(float radian, float vitesse, char direction);//direction 1=gauche 0=droite
@@ -113,7 +115,7 @@ int main()
 {
 
 	//TODO: thread pour jammer les autres avec le capteur infrarouge
-	boucleParcours();
+	testCouleur();
 
 	return 0;
 }
@@ -165,9 +167,14 @@ void boucleParcours(void)
 
 		/*----Code du parcours en bas----*/
 
-
-		Tourner(15,0,GAUCHE);
-
+		if(DIGITALIO_Read(BMP_LEFT))
+			Tourner(15,0,GAUCHE);
+		if(DIGITALIO_Read(BMP_RIGHT))
+			Tourner(15,0,DROIT);
+		if(DIGITALIO_Read(BMP_REAR))
+					Reculer(15);
+		if(DIGITALIO_Read(BMP_FRONT))
+					Avancer(15);
 
 
 
@@ -407,6 +414,63 @@ void mesureDeCoche(void)
 	}
 
 }
+void testCouleur(void)
+{
+
+	int red, blue, green, clear, fin;
+
+			//initialisation du capteur
+			ERROR_CHECK(color_Init(adjd_dev));
+
+			cap_SetValue(CAP_RED, 15);
+			cap_SetValue(CAP_GREEN, 15);
+			cap_SetValue(CAP_BLUE, 15);
+			cap_SetValue(CAP_CLEAR, 15);
+
+			integrationTime_SetValue(INTEGRATION_RED, 255);
+			integrationTime_SetValue(INTEGRATION_GREEN, 255);
+			integrationTime_SetValue(INTEGRATION_BLUE, 255);
+			integrationTime_SetValue(INTEGRATION_CLEAR, 255);
+
+			while(1)
+			{
+				color_Read(red, blue, green, clear);
+				LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d\n\n", red, green, blue, clear);
+				THREAD_MSleep(1000);
+				fin==1;
+
+				while(fin==1);
+				{
+					if (red>green && red>blue)
+						{
+							if (red>40 && green>25 )
+										{
+										LCD_Printf("coubleur jaune\n");
+										}
+									else LCD_Printf("coubleur rouge\n");
+								}
+
+
+
+					else if (blue>green && blue>red)
+				{
+					LCD_Printf("coubleur bleu\n");
+				}
+
+				else if (green>blue && green>red)
+
+							{
+
+								LCD_Printf("coubleur verte\n");
+							}
+				else LCD_Printf("coubleur introuvable\n");
+				}
+
+				fin==0;
+
+			}
+
+}
 
 
 /* TRUC POUR LES ROUE */
@@ -431,9 +495,13 @@ void PidController(infoRoue& roue)
 	float correction = P + I + D;
 
 	if (correction > 100)
+	{
 		correction = 100;
-	else (correction < -100)
-			correction = -100;
+	}
+	else if (correction < -100)
+	{
+		correction = -100;
+	}
 
 	roue.puissanceMoteur += correction;
 
