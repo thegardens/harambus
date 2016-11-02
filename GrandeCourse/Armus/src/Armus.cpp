@@ -78,7 +78,8 @@ void Avancer(float distance,float temps);
 void Avancer(float vitesse);
 void Tourner(float vitesse, float rayon, int direction);
 void Tourner(float radian, float temps, float rayon);//direction 1=gauche 0=droite
-void Reculer (float distance,float temps);
+void Reculer (float vitesse);
+void Reculer (float distance,float vitesse);
 
 void AfficheRoue(infoRoue roue);
 void PidController(infoRoue& roue);
@@ -255,7 +256,10 @@ void Avancer(float distance,float vitesse) // Vitesse : coches par secondes +/- 
 	MOTOR_SetSpeed(MOTOR_RIGHT,0);
 }
 
-//Ne marche pas pour l'instant
+void Reculer (float distance)
+{
+	Avancer(-vitesse);
+}
 void Reculer (float distance,float vitesse)
 {
 	Avancer(-distance, -vitesse);
