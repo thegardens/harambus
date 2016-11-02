@@ -38,6 +38,9 @@
 int adjd_dev;
 
 //MACRO fait par nous
+#define GAUCHE					-1
+#define DROIT					1
+
 #define ANALOGUE_BRUIT			6
 #define ANALOGUE_5KZ			5
 
@@ -73,6 +76,7 @@ void boucleParcours(void);
 
 void Avancer(float distance,float temps);
 void Avancer(float vitesse);
+void Tourner(float vitesse, float rayon, int direction);
 void Tourner(float radian, float temps, float rayon);//direction 1=gauche 0=droite
 void Reculer (float distance,float temps);
 
@@ -173,8 +177,8 @@ void boucleParcours(void)
 
 
 		//Switch case
-		Avancer(10);
-
+		Tourner(15,0,GAUCHE);
+		THREAD_MSleep(updateTime);
 		//Mesures
 		MesureRoue(moteurGauche);
 		MesureRoue(moteurDroit);
@@ -184,8 +188,8 @@ void boucleParcours(void)
 		PidController(moteurGauche);
 		PidController(moteurDroit);
 		//TEST
-		AfficheRoue(moteurGauche);
-		AfficheRoue(moteurDroit);
+		//AfficheRoue(moteurGauche);
+		//AfficheRoue(moteurDroit);
 
 	}while(detecte5khZ() < 3500);
 	MOTOR_SetSpeed(MOTOR_LEFT,0);
@@ -258,7 +262,25 @@ void Reculer (float distance,float vitesse)
 }
 
 
+void Tourner(float vitesse, float rayon, int direction)
+{
 
+	moteurGauche.cocheAParcourir = 0xfffff;
+	moteurDroit.cocheAParcourir = 0xfffff;
+if (rayon != 0)
+{
+
+	moteurGauche.ValeurAttendue =vitesse * direction *((rayon + TURNING_RADIUS/2) * cochesParCm)/rayon * updateTime/1000.0;
+	moteurDroit.ValeurAttendue = vitesse * direction *((rayon - TURNING_RADIUS/2) * cochesParCm)/rayon * updateTime/1000.0;
+}
+	else
+	{
+		moteurGauche.ValeurAttendue = vitesse * direction /2;
+		moteurDroit.ValeurAttendue = -1*vitesse * direction /2;
+	}
+
+
+}
 void Tourner(float radian, float vitesse, float rayon)
 {
 
