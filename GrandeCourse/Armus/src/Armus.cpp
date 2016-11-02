@@ -86,11 +86,13 @@ void PidController(infoRoue& roue);
 void MesureRoue(infoRoue &roue);
 void resetRoue(infoRoue &roue);
 
+int call_suiveur(void);
 float detecte5khZ(void);
 
 int math_ABS(int a);
 void initialisationEncodeurs(void);
 
+void ajust_path(void);
 void testCouleur(void);
 void mesureDeCoche(void);
 //Obsolete
@@ -115,7 +117,7 @@ int main()
 {
 
 	//TODO: thread pour jammer les autres avec le capteur infrarouge
-	testCouleur();
+	boucleParcours();
 
 	return 0;
 }
@@ -147,16 +149,14 @@ void boucleParcours(void)
 {
 
 	/*----Initiation----*/
-	ENCODER_Read(ENCODER_LEFT);
-	ENCODER_Read(ENCODER_RIGHT);
+	moteurGauche.noMoteur = MOTOR_LEFT;
+	moteurDroit.noMoteur = MOTOR_RIGHT;
 	resetRoue(moteurDroit);
 	resetRoue(moteurGauche);
 
-	moteurGauche.noMoteur = MOTOR_LEFT;
-	moteurDroit.noMoteur = MOTOR_RIGHT;
 
 	/*----Attente du départ----*/
-	while (detecte5khZ() < 1000)
+	while (detecte5khZ() < 1000 && !DIGITALIO_Read(BMP_FRONT))
 	{
 		THREAD_MSleep(100);
 	}
@@ -168,13 +168,33 @@ void boucleParcours(void)
 		/*----Code du parcours en bas----*/
 
 		if(DIGITALIO_Read(BMP_LEFT))
-			Tourner(15,0,GAUCHE);
+		{
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
+			Tourner(30,0,GAUCHE);
+
+		}
 		if(DIGITALIO_Read(BMP_RIGHT))
-			Tourner(15,0,DROIT);
+		{
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
+			Tourner(30,0,DROIT);
+
+		}
 		if(DIGITALIO_Read(BMP_REAR))
-					Reculer(15);
+		{
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
+			Reculer(30);
+
+		}
 		if(DIGITALIO_Read(BMP_FRONT))
-					Avancer(15);
+		{
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
+			Avancer(30);
+
+		}
 
 
 
@@ -191,7 +211,8 @@ void boucleParcours(void)
 		//Correction
 		PidController(moteurGauche);
 		PidController(moteurDroit);
-
+		AfficheRoue(moteurGauche);
+		AfficheRoue(moteurDroit);
 	}while(detecte5khZ() < 3500);
 	//fin
 	MOTOR_SetSpeed(MOTOR_LEFT,0);
@@ -393,9 +414,87 @@ void TournerRayonNul(float radian, float vitesse, char direction)//direction 0=g
 
 }
 
+int call_suiveur()   //fonction qui détecte ou est situer le noir
+{
 
+	int right;
+	int center;
+	int left;
+	right = DIGITALIO_Read(9);
+	center = DIGITALIO_Read(10) * 10;
+	left = DIGITALIO_Read(11) * 100;
+
+	int balance;
+	balance = right + center + left;
+
+	LCD_ClearAndPrint("Left = %d\nCenter = %d\nRight = %d\nBalance = %d\n",left/100 , center/10, right, balance);
+
+	return balance;
+}
 
 // Fonction de test
+
+void ajust_path()
+{
+	int suiveur;
+
+	while(DIGITALIO_Read(BMP_REAR) == 0)
+	{
+
+		suiveur = call_suiveur();
+		LCD_Printf("suiveur = %d\n",suiveur);
+
+		switch(suiveur)
+		{
+			case 0:
+				MOTOR_SetSpeed(MOTOR_RIGHT,-30);
+				MOTOR_SetSpeed(MOTOR_LEFT,30);
+				LCD_Printf("CAS 0");
+				break;
+			case 1 :
+				MOTOR_SetSpeed(MOTOR_RIGHT,-20);
+				MOTOR_SetSpeed(MOTOR_LEFT,30);
+				LCD_Printf("CAS 1");
+				break;
+			case 11 :
+				MOTOR_SetSpeed(MOTOR_RIGHT,50);
+				MOTOR_SetSpeed(MOTOR_LEFT,30);
+				LCD_Printf("CAS 11");
+				break;
+			case 100:
+				MOTOR_SetSpeed(MOTOR_RIGHT,30);
+				MOTOR_SetSpeed(MOTOR_LEFT,-20);
+				LCD_Printf("CAS 100");
+				break;
+			case 110:
+				MOTOR_SetSpeed(MOTOR_RIGHT,30);
+				MOTOR_SetSpeed(MOTOR_LEFT,50);
+				LCD_Printf("CAS 110");
+				break;
+			case 111 :
+				MOTOR_SetSpeed(MOTOR_RIGHT,50);
+				MOTOR_SetSpeed(MOTOR_LEFT,30);
+				LCD_Printf("CAS 111");
+				break;
+			case 101 :
+				MOTOR_SetSpeed(MOTOR_RIGHT,50);
+				MOTOR_SetSpeed(MOTOR_LEFT,50);
+				LCD_Printf("CAS 101");
+				break;
+			default :
+				MOTOR_SetSpeed(MOTOR_RIGHT,0);
+				MOTOR_SetSpeed(MOTOR_LEFT,0);
+				LCD_Printf("CAS DEFAULT");
+				break;
+
+		}
+	THREAD_MSleep(1000);
+
+	}
+	MOTOR_SetSpeed(MOTOR_RIGHT,0);
+	MOTOR_SetSpeed(MOTOR_LEFT,0);
+
+}
 
 void mesureDeCoche(void)
 {
@@ -539,6 +638,9 @@ void AfficheRoue(infoRoue roue)
 
 void resetRoue(infoRoue& roue) // TODO: savoir si l'on a de besoin de resetter puissance moteur
 {
+	roue.puissanceMoteur = 0;
+	MOTOR_SetSpeed(roue.noMoteur,0);
+	ENCODER_Read(roue.noMoteur - 6);
 	roue.ValeurAttendue = 0;
 	roue.ValeurLue = 0;
 	roue.cocheAParcourir = 0xfffff;
