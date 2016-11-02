@@ -159,40 +159,34 @@ void boucleParcours(void)
 		THREAD_MSleep(100);
 	}
 
-	/*----Parcours en tant que tel----*/
+
 	do
 	{
-		//TODO faire boucle
-		/*Faire boucle
-			 *
-			 * Mesure  des capteurs
-			 *
-			 * State -> selon la couleur
-			 *
-			 * Moteur real time
-			 *
-			 *
-			 *optionnel : chronomêtrer le temps que ça prends pour faire la boucle et la soustraire au THREAD_mSleep()
-			 * */
-		//Mesure
+
+		/*----Code du parcours en bas----*/
 
 
-		//Switch case
 		Tourner(15,0,GAUCHE);
+
+
+
+
+
+
+		/*----Code du parcours en haut----*/
+/*----------------Gestion des moteurs-------------*/
+
 		THREAD_MSleep(updateTime);
 		//Mesures
 		MesureRoue(moteurGauche);
 		MesureRoue(moteurDroit);
 
-
 		//Correction
 		PidController(moteurGauche);
 		PidController(moteurDroit);
-		//TEST
-		//AfficheRoue(moteurGauche);
-		//AfficheRoue(moteurDroit);
 
 	}while(detecte5khZ() < 3500);
+	//fin
 	MOTOR_SetSpeed(MOTOR_LEFT,0);
 	MOTOR_SetSpeed(MOTOR_RIGHT,0);
 
@@ -256,7 +250,7 @@ void Avancer(float distance,float vitesse) // Vitesse : coches par secondes +/- 
 	MOTOR_SetSpeed(MOTOR_RIGHT,0);
 }
 
-void Reculer (float distance)
+void Reculer (float vitesse)
 {
 	Avancer(-vitesse);
 }
@@ -434,7 +428,14 @@ void PidController(infoRoue& roue)
 	float D = ((roue.ValeurAttendue - roue.ValeurLue) - (roue.ValeurAttendue - roue.valeurPrec)) * constanteDerive;
 
 	//Fin
-	roue.puissanceMoteur += P + I + D;
+	float correction = P + I + D;
+
+	if (correction > 100)
+		correction = 100;
+	else (correction < -100)
+			correction = -100;
+
+	roue.puissanceMoteur += correction;
 
 	// Certaine conditions
 	if (math_ABS(roue.cocheAParcourir) < math_ABS(roue.cocheParcourueTotal)) //TODO à modifier pour fiter le real time
