@@ -95,7 +95,7 @@ int math_ABS(int a);
 void initialisationEncodeurs(void);
 
 void ajust_path(void);
-void testCouleur(void);
+int testCouleur();
 void mesureDeCoche(void);
 //Obsolete
 void TournerRayonNul(float radian, float vitesse, char direction);//direction 1=gauche 0=droite
