@@ -287,12 +287,11 @@ void boucleParcours(void)
 			LCD_ClearAndPrint("Fini");
 			MOTOR_SetSpeed(MOTOR_LEFT,0);
 			MOTOR_SetSpeed(MOTOR_RIGHT,0);
-			state = STATE_END;
 			break;
 
 		}
 
-		if(state != STATE_START && detecte5khZ(3000) >= 3000)
+		if(state != STATE_START && detecte5khZ(250) >= 250)
 				state = STATE_FINISH;
 
 
