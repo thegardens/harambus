@@ -44,6 +44,15 @@ int adjd_dev;
 #define ANALOGUE_BRUIT			6
 #define ANALOGUE_5KZ			5
 
+#define STATE_START				0
+#define STATE_FIRST_TURN		1
+#define STATE_TAPIS				2
+#define STATE_MURET				3
+#define STATE_LIGNE				4
+#define STATE_RAMP				5
+#define STATE_FINISH			6
+#define STATE_END				7
+
 //Variables globales
 float const cochesParCm = 2.6066666666666666666666666666666666666666;
 
@@ -97,8 +106,9 @@ void osc_couleur(int couleur);
 int math_ABS(int a);
 void initialisationEncodeurs(void);
 
-void ajust_path(void);
-int testCouleur();
+int ajust_path(void);
+void testCouleur(void);
+
 void mesureDeCoche(void);
 //Obsolete
 void TournerRayonNul(float radian, float vitesse, char direction);//direction 1=gauche 0=droite
@@ -152,56 +162,57 @@ float detecte5khZ()
 
 void boucleParcours(void)
 {
-
-	/*----Initiation----*/
-	moteurGauche.noMoteur = MOTOR_LEFT;
-	moteurDroit.noMoteur = MOTOR_RIGHT;
-	resetRoue(moteurDroit);
-	resetRoue(moteurGauche);
+	//Variables de parcours
+	int state = STATE_START;
 
 
-	/*----Attente du départ----*/
-	/*while (detecte5khZ() < 1000 && !DIGITALIO_Read(BMP_FRONT))
+	while (state != STATE_END)
 	{
-		THREAD_MSleep(100);
-	}*/
 
 
-	//do
-	//{
+		switch (state)
+		{
+		case STATE_START:
+			if(ANALOG_Read(ANALOGUE_BRUIT < ANALOGUE_5KZ))
+			{
+				state = STATE_FIRST_TURN;
+			}
+			break;
+		case STATE_FIRST_TURN:
+			//oscillation entre rouge et jaune
+			break;
+		case STATE_TAPIS:
+			if()
+			//run to the hills!!!
+			break;
+		case STATE_MURET:
+			//Lol fonce pas dans le mur
+			break;
+		case STATE_LIGNE:
+			//Ligne de poudre
+			int code = ajust_path();
+			//mettre correction pour le rouge p-t
+			if (testCouleur() != 5 && code == 0) // a trouver
+				state = STATE_RAMP;
+			break;
+		case STATE_RAMP:
+			Tourner(PI/4,10,0);
+			MOTOR_SetSpeed(MOTOR_LEFT,50);
+			MOTOR_SetSpeed(MOTOR_RIGHT,50);
+			break;
+		case STATE_FINISH:
 
-		/*----Code du parcours en bas----*/
+			break;
 
-		//testCouleur();
-	while(1)
-	{
-	osc_couleur(testCouleur());
-	THREAD_MSleep(10);
+		}
 
+		if(detecte5khZ() > 2500)
+				state = STATE_END;
+
+
+		THREAD_MSleep(updateTime);
 	}
 
-
-
-
-
-
-		/*----Code du parcours en haut----*/
-/*----------------Gestion des moteurs-------------*/
-
-		/*THREAD_MSleep(updateTime);
-		//Mesures
-		MesureRoue(moteurGauche);
-		MesureRoue(moteurDroit);
-
-		//Correction
-		PidController(moteurGauche);
-		PidController(moteurDroit);*/
-		//AfficheRoue(moteurGauche);
-		//AfficheRoue(moteurDroit);
-	//}while(detecte5khZ() < 3500);
-	//fin
-	MOTOR_SetSpeed(MOTOR_LEFT,0);
-	MOTOR_SetSpeed(MOTOR_RIGHT,0);
 
 }
 
@@ -421,7 +432,7 @@ int call_suiveur()   //fonction qui détecte ou est situer le noir
 
 // Fonction de test
 
-void ajust_path()
+int ajust_path()
 {
 	int suiveur;
 
@@ -489,6 +500,7 @@ void ajust_path()
 							LCD_Printf("CAS DEFAULT");
 							break;
 			}
+			return suiveur;
 		}
 
 
