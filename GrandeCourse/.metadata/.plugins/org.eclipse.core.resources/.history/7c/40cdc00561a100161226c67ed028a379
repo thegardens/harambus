@@ -57,7 +57,7 @@ float  constanteInteg = 0.05;
 float constanteDerive = 0;
 int updateTime = 250;
 
-int isReversed = 1;
+int isReversed = -1;
 
 struct infoRoue
 {
@@ -171,13 +171,15 @@ void boucleParcours(void)
 
 		if(DIGITALIO_Read(BMP_LEFT))
 		{
-
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
 			Tourner(30,30,GAUCHE);
 
 		}
 		if(DIGITALIO_Read(BMP_RIGHT))
 		{
-
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
 			Tourner(30,0,DROIT);
 
 		}
@@ -189,6 +191,8 @@ void boucleParcours(void)
 		}
 		if(DIGITALIO_Read(BMP_REAR))
 		{
+			resetRoue(moteurDroit);
+			resetRoue(moteurGauche);
 			Tourner(30,TURNING_RADIUS/4,DROIT);
 
 		}
@@ -221,8 +225,6 @@ void boucleParcours(void)
 
 void Avancer(float vitesse)
 {
-	resetRoue(moteurGauche);
-	resetRoue(moteurDroit);
 	moteurGauche.cocheAParcourir = 0xfffff;
 	moteurDroit.cocheAParcourir = 0xfffff;
 	moteurGauche.ValeurAttendue = isReversed * vitesse * updateTime/1000.0 ;
@@ -295,8 +297,8 @@ void Tourner(float vitesse, float rayon, int direction)
 if (rayon != 0)
 {
 
-	moteurGauche.ValeurAttendue = isReversed * vitesse * direction *((rayon + TURNING_RADIUS/2) * cochesParCm)/rayon * updateTime/1000.0 /4;
-	moteurDroit.ValeurAttendue = isReversed * vitesse * direction *((rayon - TURNING_RADIUS/2) * cochesParCm)/rayon * updateTime/1000.0 /4;
+	moteurGauche.ValeurAttendue = isReversed * vitesse * direction *((rayon + isReversed*TURNING_RADIUS/2) * cochesParCm)/rayon * updateTime/1000.0 /4;
+	moteurDroit.ValeurAttendue = isReversed * vitesse * direction *((rayon - isReversed*TURNING_RADIUS/2) * cochesParCm)/rayon * updateTime/1000.0 /4;
 }
 	else
 	{
@@ -576,51 +578,47 @@ void testCouleur(void)
 
 void PidController(infoRoue& roue)
 {
-	if(roue.ValeurAttendue) // Empèche le bug qu'il commence à avancer lorque l'on pousse dessus
+	//Partie P
+	float P = (roue.ValeurAttendue - roue.ValeurLue)*constanteProp;
+
+
+	//Partie I
+	float I = (roue.cycles * roue.ValeurAttendue - roue.cocheParcourueTotal) * constanteInteg;
+
+
+	//Partie D
+	//TODO: tester la partie D
+
+	float D = ((roue.ValeurAttendue - roue.ValeurLue) - (roue.ValeurAttendue - roue.valeurPrec)) * constanteDerive;
+
+	//Fin
+	float correction = P + I + D;
+
+	if (correction > 100)
 	{
-
-		//Partie P
-		float P = (roue.ValeurAttendue - roue.ValeurLue)*constanteProp;
-
-
-		//Partie I
-		float I = (roue.cycles * roue.ValeurAttendue - roue.cocheParcourueTotal) * constanteInteg;
-
-
-		//Partie D
-		//TODO: tester la partie D
-
-		float D = ((roue.ValeurAttendue - roue.ValeurLue) - (roue.ValeurAttendue - roue.valeurPrec)) * constanteDerive;
-
-		//Fin
-		float correction = P + I + D;
-
-		if (correction > 100)
-		{
-			correction = 100;
-		}
-		else if (correction < -100)
-		{
-			correction = -100;
-		}
-
-		roue.puissanceMoteur += correction;
-
-		// Certaine conditions
-		if (math_ABS(roue.cocheAParcourir) < math_ABS(roue.cocheParcourueTotal)) //TODO à modifier pour fiter le real time
-			roue.puissanceMoteur = 0;
-		else if(roue.puissanceMoteur > 100)
-		{
-			roue.puissanceMoteur = 100;
-			LCD_Printf("ERROR :\tMotor overload\n");
-		}
-		else if (roue.puissanceMoteur < -100)
-		{
-			roue.puissanceMoteur = -100;
-			LCD_Printf("ERROR :\tMotor overload\n");
-		}
-		MOTOR_SetSpeed(roue.noMoteur,roue.puissanceMoteur);
+		correction = 100;
 	}
+	else if (correction < -100)
+	{
+		correction = -100;
+	}
+
+	roue.puissanceMoteur += correction;
+
+	// Certaine conditions
+	if (math_ABS(roue.cocheAParcourir) < math_ABS(roue.cocheParcourueTotal)) //TODO à modifier pour fiter le real time
+		roue.puissanceMoteur = 0;
+	else if(roue.puissanceMoteur > 100)
+	{
+		roue.puissanceMoteur = 100;
+		LCD_Printf("ERROR :\tMotor overload\n");
+	}
+	else if (roue.puissanceMoteur < -100)
+	{
+		roue.puissanceMoteur = -100;
+		LCD_Printf("ERROR :\tMotor overload\n");
+	}
+	MOTOR_SetSpeed(roue.noMoteur,roue.puissanceMoteur);
 }
 
 void MesureRoue(infoRoue &roue) //TODO Adapter pour resetter les cycles entre chaque
