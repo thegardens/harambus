@@ -176,6 +176,7 @@ void boucleParcours(void)
 			//oscillation entre rouge et jaune
 			break;
 		case STATE_TAPIS:
+			if()
 			//run to the hills!!!
 			break;
 		case STATE_MURET:
@@ -190,9 +191,11 @@ void boucleParcours(void)
 			break;
 		case STATE_RAMP:
 			Tourner(PI/4,10,0);
+			MOTOR_SetSpeed(MOTOR_LEFT,50);
+			MOTOR_SetSpeed(MOTOR_RIGHT,50);
 			break;
 		case STATE_FINISH:
-			//you spin my head head right rouuund riiight rouuuund
+
 			break;
 
 		}
