@@ -52,6 +52,7 @@ int adjd_dev;
 #define STATE_RAMP				5
 #define STATE_FINISH			6
 #define STATE_END				7
+#define STATE_DEBUT_DROIT		8
 
 //Variables globales
 float const cochesParCm = 2.6066666666666666666666666666666666666666;
@@ -107,7 +108,7 @@ int math_ABS(int a);
 void initialisationEncodeurs(void);
 
 int ajust_path(void);
-void testCouleur(void);
+int testCouleur(void);
 
 void mesureDeCoche(void);
 //Obsolete
@@ -164,7 +165,7 @@ void boucleParcours(void)
 {
 	//Variables de parcours
 	int state = STATE_START;
-
+	int code;
 
 	while (state != STATE_END)
 	{
@@ -178,19 +179,51 @@ void boucleParcours(void)
 				state = STATE_FIRST_TURN;
 			}
 			break;
+		case STATE_DEBUT_DROIT:
+			osc_couleur(testCouleur());
+			code = ajust_path();
+			if (code/100 == 0)
+				MOTOR_SetSpeed(MOTOR_RIGHT,0);
+			if(code%10 == 0)
+				MOTOR_SetSpeed(MOTOR_LEFT,0);
+			if(code == 0)
+			{
+				Avancer(3,15);
+				state = STATE_FIRST_TURN;
+			}
+
+			break;
 		case STATE_FIRST_TURN:
-			//oscillation entre rouge et jaune
+			osc_couleur(testCouleur());
+			code = ajust_path();
+			if (!code /100)
+				MOTOR_SetSpeed(MOTOR_RIGHT,0);
+			if(!code % 10)
+				MOTOR_SetSpeed(MOTOR_LEFT,0);
+			if(code == 0)
+			{
+				state = STATE_TAPIS;
+			}
 			break;
 		case STATE_TAPIS:
-			if()
-			//run to the hills!!!
+			MOTOR_SetSpeed(MOTOR_LEFT,70);
+			MOTOR_SetSpeed(MOTOR_RIGHT,60);
+			code = ajust_path();
+			if (code /100)
+				MOTOR_SetSpeed(MOTOR_RIGHT,0);
+			if(code % 10)
+				MOTOR_SetSpeed(MOTOR_LEFT,0);
+			if(code == 0)
+			{
+				state = STATE_MURET;
+			}
 			break;
 		case STATE_MURET:
 			//Lol fonce pas dans le mur
 			break;
 		case STATE_LIGNE:
 			//Ligne de poudre
-			int code = ajust_path();
+			code = ajust_path();
 			//mettre correction pour le rouge p-t
 			if (testCouleur() != 5 && code == 0) // a trouver
 				state = STATE_RAMP;
