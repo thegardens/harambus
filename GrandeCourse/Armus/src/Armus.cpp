@@ -166,7 +166,7 @@ void boucleParcours(void)
 	//Variables de parcours
 	int state = STATE_START;
 	int code;
-
+	int couleur;
 	while (state != STATE_END)
 	{
 
@@ -174,16 +174,18 @@ void boucleParcours(void)
 		switch (state)
 		{
 		case STATE_START:
-			if(ANALOG_Read(ANALOGUE_BRUIT < ANALOGUE_5KZ))
+			LCD_ClearAndPrint("Wait...");
+			if(detecte5khZ() > 1000)
 			{
 				state = STATE_FIRST_TURN;
 			}
 			break;
-		case STATE_DEBUT_DROIT:
-			osc_couleur(testCouleur());
-			code = ajust_path();
+	case STATE_DEBUT_DROIT:
+			LCD_ClearAndPrint("Debut Droit");
+		osc_couleur(testCouleur());
+			code = call_suiveur();
 			if (code/100 == 0)
-				MOTOR_SetSpeed(MOTOR_RIGHT,0);
+			MOTOR_SetSpeed(MOTOR_RIGHT,0);
 			if(code%10 == 0)
 				MOTOR_SetSpeed(MOTOR_LEFT,0);
 			if(code == 0)
@@ -194,47 +196,64 @@ void boucleParcours(void)
 
 			break;
 		case STATE_FIRST_TURN:
+			LCD_ClearAndPrint("First turn");
 			osc_couleur(testCouleur());
-			code = ajust_path();
+			code = call_suiveur();
 			if (!code /100)
 				MOTOR_SetSpeed(MOTOR_RIGHT,0);
 			if(!code % 10)
 				MOTOR_SetSpeed(MOTOR_LEFT,0);
 			if(code == 0)
 			{
-				state = STATE_TAPIS;
+				Reculer(3,15);
+				code = call_suiveur();
+				if (code==0)
+					state = STATE_TAPIS;
 			}
 			break;
 		case STATE_TAPIS:
-			MOTOR_SetSpeed(MOTOR_LEFT,70);
-			MOTOR_SetSpeed(MOTOR_RIGHT,60);
-			code = ajust_path();
+			LCD_ClearAndPrint("Tapis");
+			MOTOR_SetSpeed(MOTOR_RIGHT,-50);
+			MOTOR_SetSpeed(MOTOR_LEFT,-45);
+			code = call_suiveur();
 			if (code /100)
 				MOTOR_SetSpeed(MOTOR_RIGHT,0);
 			if(code % 10)
 				MOTOR_SetSpeed(MOTOR_LEFT,0);
-			if(code == 0)
+			if(code == 111)
 			{
 				state = STATE_MURET;
 			}
 			break;
 		case STATE_MURET:
-			//Lol fonce pas dans le mur
+
+			LCD_ClearAndPrint("Muret");
+			couleur = testCouleur();
+			osc_couleur(couleur);
+			code = call_suiveur();
+			if(code < 111 || couleur == 5)
+				state = STATE_LIGNE;
 			break;
 		case STATE_LIGNE:
+			LCD_ClearAndPrint("Ligne");
 			//Ligne de poudre
+			if(couleur==1)
+			osc_couleur(couleur);
+
 			code = ajust_path();
+			couleur = testCouleur();
 			//mettre correction pour le rouge p-t
-			if (testCouleur() != 5 && code == 0) // a trouver
+			if (couleur == 3 || couleur == 4||couleur ==2) // a trouver
 				state = STATE_RAMP;
 			break;
 		case STATE_RAMP:
+			LCD_ClearAndPrint("Rampe");
 			Tourner(PI/4,10,0);
-			MOTOR_SetSpeed(MOTOR_LEFT,50);
-			MOTOR_SetSpeed(MOTOR_RIGHT,50);
+			MOTOR_SetSpeed(MOTOR_LEFT,-50);
+			MOTOR_SetSpeed(MOTOR_RIGHT,-50);
 			break;
 		case STATE_FINISH:
-
+			LCD_ClearAndPrint("Fini");
 			break;
 
 		}
@@ -243,7 +262,7 @@ void boucleParcours(void)
 				state = STATE_END;
 
 
-		THREAD_MSleep(updateTime);
+		//THREAD_MSleep(updateTime);
 	}
 
 
@@ -458,7 +477,7 @@ int call_suiveur()   //fonction qui détecte ou est situer le noir
 	int balance;
 	balance = right + center + left;
 
-	LCD_ClearAndPrint("Left = %d\nCenter = %d\nRight = %d\nBalance = %d\n",left/100 , center/10, right, balance);
+	//LCD_ClearAndPrint("Left = %d\nCenter = %d\nRight = %d\nBalance = %d\n",left/100 , center/10, right, balance);
 
 	return balance;
 }
@@ -480,57 +499,57 @@ int ajust_path()
 							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
 							MOTOR_SetSpeed(MOTOR_LEFT,30);
 							//Tourner(10,0,DROIT);
-							LCD_Printf("Tourne à droite\n");
-							LCD_Printf("CAS 0");
+							//LCD_Printf("Tourne à droite\n");
+							//LCD_Printf("CAS 0");
 							break;
 						case 1 :
 							MOTOR_SetSpeed(MOTOR_RIGHT,35);
 							MOTOR_SetSpeed(MOTOR_LEFT,-30);
 							//Tourner(10,0,GAUCHE);
-							LCD_Printf("Tourne à gauche\n");
-							LCD_Printf("CAS 1");
+							//LCD_Printf("Tourne à gauche\n");
+							//LCD_Printf("CAS 1");
 							break;
 						case 11 :
 							MOTOR_SetSpeed(MOTOR_RIGHT,35);
 							MOTOR_SetSpeed(MOTOR_LEFT,-30);
 							//Tourner(10,0,GAUCHE);
-							LCD_Printf("Tourne à gauche\n");
-							LCD_Printf("CAS 11");
+							//LCD_Printf("Tourne à gauche\n");
+							//LCD_Printf("CAS 11");
 							break;
 						case 100:
 							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
 							MOTOR_SetSpeed(MOTOR_LEFT,35);
 							//Tourner(10,0,DROIT);
-							LCD_Printf("Tourne à droite\n");
-							LCD_Printf("CAS 100");
+							//LCD_Printf("Tourne à droite\n");
+							//LCD_Printf("CAS 100");
 							break;
 						case 110:
 							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
 							MOTOR_SetSpeed(MOTOR_LEFT,35);
 							//Tourner(10,0,DROIT);
-							LCD_Printf("Tourne à droite\n");
-							LCD_Printf("CAS 110");
+							//LCD_Printf("Tourne à droite\n");
+							//LCD_Printf("CAS 110");
 							break;
 						case 111 :
 							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
-							MOTOR_SetSpeed(MOTOR_LEFT,35);
+							MOTOR_SetSpeed(MOTOR_LEFT,-30);
 							//Tourner(10,0,DROIT);
-							LCD_Printf("Tourne à droite\n");
-							LCD_Printf("CAS 111");
+							//LCD_Printf("Tourne à droite\n");
+							//LCD_Printf("CAS 111");
 							break;
 						case 101 :
 							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
 							MOTOR_SetSpeed(MOTOR_LEFT,-35);
 							//Avancer(15);
-							LCD_Printf("avance\n");
-							LCD_Printf("CAS 101");
+							//LCD_Printf("avance\n");
+							//LCD_Printf("CAS 101");
 							break;
 						default :
 							MOTOR_SetSpeed(MOTOR_RIGHT,0);
 							MOTOR_SetSpeed(MOTOR_LEFT,0);
 							//Avancer(0);
-							LCD_Printf("STOP\n");
-							LCD_Printf("CAS DEFAULT");
+							//LCD_Printf("STOP\n");
+							//LCD_Printf("CAS DEFAULT");
 							break;
 			}
 			return suiveur;
