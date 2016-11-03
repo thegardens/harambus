@@ -91,6 +91,9 @@ void resetRoue(infoRoue &roue);
 int call_suiveur(void);
 float detecte5khZ(void);
 
+void osc_couleur(int couleur);
+
+
 int math_ABS(int a);
 void initialisationEncodeurs(void);
 
@@ -169,8 +172,8 @@ void boucleParcours(void)
 
 		/*----Code du parcours en bas----*/
 
-		testCouleur();
-
+		//testCouleur();
+		void osc_couleur(int couleur);
 
 
 
@@ -871,3 +874,32 @@ int color_Init(int& dev_handle)
 
 	return error;
 }
+
+
+void osc_couleur(int couleur)
+{
+	switch (couleur)
+	{
+	case 1: MOTOR_SetSpeed(MOTOR_RIGHT,-50);
+			MOTOR_SetSpeed(MOTOR_LEFT,-20);
+	break;
+
+	case 2: MOTOR_SetSpeed(MOTOR_RIGHT,-20);
+	 	 	MOTOR_SetSpeed(MOTOR_LEFT,-50);
+	break;
+
+	case 3: MOTOR_SetSpeed(MOTOR_RIGHT,-20);
+			MOTOR_SetSpeed(MOTOR_LEFT,-50);
+	break;
+
+	case 4: MOTOR_SetSpeed(MOTOR_RIGHT,-20);
+			MOTOR_SetSpeed(MOTOR_LEFT,-50);
+	break;
+	default: MOTOR_SetSpeed(MOTOR_RIGHT,-50);
+			 MOTOR_SetSpeed(MOTOR_LEFT,-50);
+	break;
+	}
+}
+
+
+
