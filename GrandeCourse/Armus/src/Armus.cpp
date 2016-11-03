@@ -98,7 +98,7 @@ int math_ABS(int a);
 void initialisationEncodeurs(void);
 
 void ajust_path(void);
-void testCouleur(void);
+int testCouleur();
 void mesureDeCoche(void);
 //Obsolete
 void TournerRayonNul(float radian, float vitesse, char direction);//direction 1=gauche 0=droite
@@ -508,7 +508,7 @@ void mesureDeCoche(void)
 
 }
 
-void testCouleur(void)
+int testCouleur()
 {
 
 	int red, blue, green, clear, fin;
@@ -527,11 +527,11 @@ void testCouleur(void)
 			integrationTime_SetValue(INTEGRATION_BLUE, 255);
 			integrationTime_SetValue(INTEGRATION_CLEAR, 255);
 
-			while(1)
-			{
+
+
 				color_Read(red, blue, green, clear);
 				LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d,HUE=%f\n\n", red, green, blue, clear, hue);
-				THREAD_MSleep(1000);
+				THREAD_MSleep(50);
 				fin==1;
 
 
@@ -612,8 +612,35 @@ void testCouleur(void)
 				}*/
 
 				fin==0;
+				int hueColor=0;//1 is red , 2 is green , 3 is blue , 4 is yelow, 5 is white, 6 is unknow
 
-			}
+				if (hue>=200 && hue <=230)
+				{
+					hueColor=3;
+				}
+				else if (hue>=100 && hue <=135)
+				{
+					hueColor=2;
+				}
+				else if (hue>=10 && hue <=25)
+				{
+					hueColor=1;
+				}
+				else if (hue>=40 && hue <=57)
+				{
+					hueColor=4;
+				}
+				else if (hue>=60 && hue <=70)
+				{
+					hueColor=5;
+				}
+				else
+				{
+					hueColor=6;
+				}
+			LCD_Printf("Couleur = %d\n",hueColor);
+			return hueColor;
+
 
 
 
