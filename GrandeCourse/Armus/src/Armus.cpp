@@ -55,9 +55,9 @@ bool sonActif(0);
 float  constanteProp = 1.8;
 float  constanteInteg = 0.05;
 float constanteDerive = 0;
-int updateTime = 250;
+int updateTime = 100;
 
-int isReversed = 1;
+int isReversed = -1;
 
 struct infoRoue
 {
@@ -169,29 +169,10 @@ void boucleParcours(void)
 
 		/*----Code du parcours en bas----*/
 
-		if(DIGITALIO_Read(BMP_LEFT))
-		{
+		testCouleur();
 
-			Tourner(30,30,GAUCHE);
 
-		}
-		if(DIGITALIO_Read(BMP_RIGHT))
-		{
 
-			Tourner(30,0,DROIT);
-
-		}
-		if(DIGITALIO_Read(BMP_FRONT))
-		{
-			resetRoue(moteurDroit);
-			resetRoue(moteurGauche);
-
-		}
-		if(DIGITALIO_Read(BMP_REAR))
-		{
-			Tourner(30,TURNING_RADIUS/4,DROIT);
-
-		}
 
 
 
@@ -208,8 +189,8 @@ void boucleParcours(void)
 		//Correction
 		PidController(moteurGauche);
 		PidController(moteurDroit);
-		AfficheRoue(moteurGauche);
-		AfficheRoue(moteurDroit);
+		//AfficheRoue(moteurGauche);
+		//AfficheRoue(moteurDroit);
 	}while(detecte5khZ() < 3500);
 	//fin
 	MOTOR_SetSpeed(MOTOR_LEFT,0);
@@ -437,63 +418,74 @@ void ajust_path()
 {
 	int suiveur;
 
-	while(DIGITALIO_Read(BMP_REAR) == 0)
-	{
 
-		suiveur = call_suiveur();
-		LCD_Printf("suiveur = %d\n",suiveur);
 
-		switch(suiveur)
-		{
+	suiveur = call_suiveur();
+			LCD_Printf("suiveur = %d\n",suiveur);
+
+			switch(suiveur)
+			{
 			case 0:
-				MOTOR_SetSpeed(MOTOR_RIGHT,-30);
-				MOTOR_SetSpeed(MOTOR_LEFT,30);
-				LCD_Printf("CAS 0");
-				break;
-			case 1 :
-				MOTOR_SetSpeed(MOTOR_RIGHT,-20);
-				MOTOR_SetSpeed(MOTOR_LEFT,30);
-				LCD_Printf("CAS 1");
-				break;
-			case 11 :
-				MOTOR_SetSpeed(MOTOR_RIGHT,50);
-				MOTOR_SetSpeed(MOTOR_LEFT,30);
-				LCD_Printf("CAS 11");
-				break;
-			case 100:
-				MOTOR_SetSpeed(MOTOR_RIGHT,30);
-				MOTOR_SetSpeed(MOTOR_LEFT,-20);
-				LCD_Printf("CAS 100");
-				break;
-			case 110:
-				MOTOR_SetSpeed(MOTOR_RIGHT,30);
-				MOTOR_SetSpeed(MOTOR_LEFT,50);
-				LCD_Printf("CAS 110");
-				break;
-			case 111 :
-				MOTOR_SetSpeed(MOTOR_RIGHT,50);
-				MOTOR_SetSpeed(MOTOR_LEFT,30);
-				LCD_Printf("CAS 111");
-				break;
-			case 101 :
-				MOTOR_SetSpeed(MOTOR_RIGHT,50);
-				MOTOR_SetSpeed(MOTOR_LEFT,50);
-				LCD_Printf("CAS 101");
-				break;
-			default :
-				MOTOR_SetSpeed(MOTOR_RIGHT,0);
-				MOTOR_SetSpeed(MOTOR_LEFT,0);
-				LCD_Printf("CAS DEFAULT");
-				break;
-
+							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+							MOTOR_SetSpeed(MOTOR_LEFT,30);
+							//Tourner(10,0,DROIT);
+							LCD_Printf("Tourne à droite\n");
+							LCD_Printf("CAS 0");
+							break;
+						case 1 :
+							MOTOR_SetSpeed(MOTOR_RIGHT,35);
+							MOTOR_SetSpeed(MOTOR_LEFT,-30);
+							//Tourner(10,0,GAUCHE);
+							LCD_Printf("Tourne à gauche\n");
+							LCD_Printf("CAS 1");
+							break;
+						case 11 :
+							MOTOR_SetSpeed(MOTOR_RIGHT,35);
+							MOTOR_SetSpeed(MOTOR_LEFT,-30);
+							//Tourner(10,0,GAUCHE);
+							LCD_Printf("Tourne à gauche\n");
+							LCD_Printf("CAS 11");
+							break;
+						case 100:
+							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+							MOTOR_SetSpeed(MOTOR_LEFT,35);
+							//Tourner(10,0,DROIT);
+							LCD_Printf("Tourne à droite\n");
+							LCD_Printf("CAS 100");
+							break;
+						case 110:
+							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+							MOTOR_SetSpeed(MOTOR_LEFT,35);
+							//Tourner(10,0,DROIT);
+							LCD_Printf("Tourne à droite\n");
+							LCD_Printf("CAS 110");
+							break;
+						case 111 :
+							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+							MOTOR_SetSpeed(MOTOR_LEFT,35);
+							//Tourner(10,0,DROIT);
+							LCD_Printf("Tourne à droite\n");
+							LCD_Printf("CAS 111");
+							break;
+						case 101 :
+							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+							MOTOR_SetSpeed(MOTOR_LEFT,-35);
+							//Avancer(15);
+							LCD_Printf("avance\n");
+							LCD_Printf("CAS 101");
+							break;
+						default :
+							MOTOR_SetSpeed(MOTOR_RIGHT,0);
+							MOTOR_SetSpeed(MOTOR_LEFT,0);
+							//Avancer(0);
+							LCD_Printf("STOP\n");
+							LCD_Printf("CAS DEFAULT");
+							break;
+			}
 		}
-	THREAD_MSleep(1000);
 
-	}
-	MOTOR_SetSpeed(MOTOR_RIGHT,0);
-	MOTOR_SetSpeed(MOTOR_LEFT,0);
 
-}
+
 
 void mesureDeCoche(void)
 {
@@ -512,18 +504,20 @@ void mesureDeCoche(void)
 	}
 
 }
+
 void testCouleur(void)
 {
 
 	int red, blue, green, clear, fin;
+	float hue;
 
 			//initialisation du capteur
 			ERROR_CHECK(color_Init(adjd_dev));
 
-			cap_SetValue(CAP_RED, 15);
-			cap_SetValue(CAP_GREEN, 15);
-			cap_SetValue(CAP_BLUE, 15);
-			cap_SetValue(CAP_CLEAR, 15);
+			cap_SetValue(CAP_RED, 0);
+			cap_SetValue(CAP_GREEN, 0);
+			cap_SetValue(CAP_BLUE, 0);
+			cap_SetValue(CAP_CLEAR, 0);
 
 			integrationTime_SetValue(INTEGRATION_RED, 255);
 			integrationTime_SetValue(INTEGRATION_GREEN, 255);
@@ -533,15 +527,65 @@ void testCouleur(void)
 			while(1)
 			{
 				color_Read(red, blue, green, clear);
-				LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d\n\n", red, green, blue, clear);
+				LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d,HUE=%f\n\n", red, green, blue, clear, hue);
 				THREAD_MSleep(1000);
 				fin==1;
 
-				while(fin==1);
+
+				float R = red/255.0;
+				float G = green/255.0;
+				float B = blue/255.0;
+				int dominantColor= 0;//1 is red , 2 is green , 3 is blue , 0 is default
+
+				if(R>B && R>G)
+					dominantColor=1;
+				else if(G>R && G>B)
+					dominantColor=2;
+				else if(B>R && B>G)
+					dominantColor=3;
+				else
+					dominantColor=0;
+
+				switch (dominantColor)
 				{
-					if (red>green && red>blue)
+				case 1: if(G>B)
+							hue = (G-B)/(R-B);
+						else if(B>G)
+							hue = (G-B)/(R-G);
+				break;
+
+				case 2: if(R>B)
+							hue = 2.0 + (B-R)/(G-B);
+						else if(B>R)
+							hue = 2.0 + (B-R)/(G-R);
+				break;
+
+				case 3: if(R>G)
+							hue = 4.0 + (R-G)/(B-G);
+						else if(G>R)
+							hue = 4.0 + (R-G)/(B-R);
+				break;
+
+				default: hue=0.0;
+				break;
+
+
+				}
+				if(hue>0.0)
+					hue = hue*60.0;
+				else
+				{
+					hue=hue*60;
+					hue =hue + 360;
+				}
+
+
+
+				/*while(fin==1);
+				{
+					if (red>green && green>blue)
 						{
-							if (red>40 && green>25 )
+							if (red>100 && green>100 )
 										{
 										LCD_Printf("coubleur jaune\n");
 										}
@@ -562,11 +606,15 @@ void testCouleur(void)
 								LCD_Printf("coubleur verte\n");
 							}
 				else LCD_Printf("coubleur introuvable\n");
-				}
+				}*/
 
 				fin==0;
 
 			}
+
+
+
+
 
 }
 
@@ -576,7 +624,7 @@ void testCouleur(void)
 
 void PidController(infoRoue& roue)
 {
-	if(roue.ValeurAttendue) // Empèche le bug qu'il commence à avancer lorque l'on pousse dessus
+	if(roue.ValeurAttendue != 0) // Empèche le bug qu'il commence à avancer lorque l'on pousse dessus
 	{
 
 		//Partie P
@@ -641,9 +689,9 @@ void AfficheRoue(infoRoue roue)
 
 void resetRoue(infoRoue& roue) // TODO: savoir si l'on a de besoin de resetter puissance moteur
 {
-	roue.puissanceMoteur = 0;
+	//roue.puissanceMoteur = 0;
 	//MOTOR_SetSpeed(roue.noMoteur,0);
-	ENCODER_Read(roue.noMoteur - 6);
+	//ENCODER_Read(roue.noMoteur - 6);
 	roue.ValeurAttendue = 0;
 	roue.ValeurLue = 0;
 	roue.cocheAParcourir = 0xfffff;
