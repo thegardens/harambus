@@ -149,7 +149,7 @@ float detecte5khZ()
 	{
 		if (!sonActif) // part le chronomètre
 			tempDebut5Khz = SYSTEM_ReadTimerMSeconds();
-			sonActif = true;
+		sonActif = true;
 	}
 	else
 	{
@@ -167,19 +167,17 @@ float detecte5khZ(int ms)
 //mesures
 	int bruit = ANALOG_Read(ANALOGUE_BRUIT);
 	int son = ANALOG_Read(ANALOGUE_5KZ);
-	int temps_signal;
-	temps_signal = SYSTEM_ReadTimerMSeconds() - tempDebut5Khz;
 
+
+	if ((SYSTEM_ReadTimerMSeconds() - tempDebut5Khz) > ms){
+		sonActif = false;
+		return (ms)	; // retourne le temps que le son à été émis
+	}
 	if (bruit < son)
 	{
-		if (!sonActif){ // part le chronomètre
+		if (!sonActif) // part le chronomètre
 			tempDebut5Khz = SYSTEM_ReadTimerMSeconds();
 			sonActif = true;
-		}
-		else if(temps_signal >= ms){
-			sonActif = false;
-			return (ms)	; // retourne le temps que le son à été émis
-		}
 	}
 	else
 	{
@@ -206,7 +204,7 @@ void boucleParcours(void)
 		{
 		case STATE_START:
 			LCD_ClearAndPrint("Wait...");
-			if(detecte5khZ(250) >= 250)
+			if(detecte5khZ(500) >= 500)
 			{
 				state = STATE_FIRST_TURN;
 			}
@@ -285,15 +283,12 @@ void boucleParcours(void)
 			break;
 		case STATE_FINISH:
 			LCD_ClearAndPrint("Fini");
-			MOTOR_SetSpeed(MOTOR_LEFT,0);
-			MOTOR_SetSpeed(MOTOR_RIGHT,0);
-			state = STATE_END;
 			break;
 
 		}
 
-		if(state != STATE_START && detecte5khZ(3000) >= 3000)
-				state = STATE_FINISH;
+		if(detecte5khZ(2500) >= 2500)
+				state = STATE_END;
 
 
 		//THREAD_MSleep(updateTime);

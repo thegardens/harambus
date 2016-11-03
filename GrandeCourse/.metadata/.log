@@ -8,3 +8,76 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -perspective org.eclip
 
 !ENTRY org.eclipse.cdt.core 1 0 2016-11-01 16:12:47.627
 !MESSAGE Indexed 'Armus' (1 sources, 122 headers) in 5,46 sec: 10 351 declarations; 15 834 references; 40 unresolved inclusions; 84 syntax errors; 3 750 unresolved names (13 %)
+!SESSION 2016-11-03 10:11:57.016 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.8.0_45
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_CA
+Framework arguments:  -perspective org.eclipse.cdt.ui.CPerspective -Xms40m -Xmx512m -XX:MaxPermSize=256m
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -perspective org.eclipse.cdt.ui.CPerspective -Xms40m -Xmx512m -XX:MaxPermSize=256m
+
+!ENTRY org.eclipse.core.resources 4 2 2016-11-03 10:27:03.562
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.core.resources".
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: A resource already exists on disk 'C:\Users\phili\Documents\GitHub\harambus\GrandeCourse\Armus\Debug\sources.mk'.
+	at org.eclipse.core.internal.resources.File.create(File.java:140)
+	at org.eclipse.core.internal.resources.File.create(File.java:180)
+	at org.eclipse.cdt.managedbuilder.makegen.gnu.GnuMakefileGenerator.createFile(GnuMakefileGenerator.java:4340)
+	at org.eclipse.cdt.managedbuilder.makegen.gnu.GnuMakefileGenerator.regenerateMakefiles(GnuMakefileGenerator.java:926)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1006)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:513)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:734)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:205)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:245)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:300)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:303)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:359)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:382)
+	at org.eclipse.core.internal.resources.Workspace.buildInternal(Workspace.java:486)
+	at org.eclipse.core.internal.resources.Workspace.build(Workspace.java:405)
+	at org.eclipse.ui.actions.BuildAction$1.runInWorkspace(BuildAction.java:287)
+	at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SUBENTRY 1 org.eclipse.core.resources 4 272 2016-11-03 10:27:03.572
+!MESSAGE A resource already exists on disk 'C:\Users\phili\Documents\GitHub\harambus\GrandeCourse\Armus\Debug\sources.mk'.
+!SUBENTRY 1 org.eclipse.core.resources 4 272 2016-11-03 10:27:03.572
+!MESSAGE A resource already exists on disk 'C:\Users\phili\Documents\GitHub\harambus\GrandeCourse\Armus\Debug\sources.mk'.
+
+!ENTRY org.eclipse.core.resources 4 75 2016-11-03 10:27:03.658
+!MESSAGE Errors occurred during the build.
+!SUBENTRY 1 org.eclipse.cdt.managedbuilder.core 4 75 2016-11-03 10:27:03.658
+!MESSAGE Errors running builder 'CDT Builder' on project 'Armus'.
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: A resource already exists on disk 'C:\Users\phili\Documents\GitHub\harambus\GrandeCourse\Armus\Debug\sources.mk'.
+	at org.eclipse.core.internal.resources.File.create(File.java:140)
+	at org.eclipse.core.internal.resources.File.create(File.java:180)
+	at org.eclipse.cdt.managedbuilder.makegen.gnu.GnuMakefileGenerator.createFile(GnuMakefileGenerator.java:4340)
+	at org.eclipse.cdt.managedbuilder.makegen.gnu.GnuMakefileGenerator.regenerateMakefiles(GnuMakefileGenerator.java:926)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performMakefileGeneration(CommonBuilder.java:1006)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.performPrebuildGeneration(CommonBuilder.java:873)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:748)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:513)
+	at org.eclipse.cdt.managedbuilder.internal.core.CommonBuilder.build(CommonBuilder.java:459)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:734)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:205)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:245)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:300)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:303)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:359)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:382)
+	at org.eclipse.core.internal.resources.Workspace.buildInternal(Workspace.java:486)
+	at org.eclipse.core.internal.resources.Workspace.build(Workspace.java:405)
+	at org.eclipse.ui.actions.BuildAction$1.runInWorkspace(BuildAction.java:287)
+	at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SUBENTRY 2 org.eclipse.core.resources 4 272 2016-11-03 10:27:03.660
+!MESSAGE A resource already exists on disk 'C:\Users\phili\Documents\GitHub\harambus\GrandeCourse\Armus\Debug\sources.mk'.
+!SUBENTRY 1 org.eclipse.core.resources 4 272 2016-11-03 10:27:03.660
+!MESSAGE A resource already exists on disk 'C:\Users\phili\Documents\GitHub\harambus\GrandeCourse\Armus\Debug\sources.mk'.

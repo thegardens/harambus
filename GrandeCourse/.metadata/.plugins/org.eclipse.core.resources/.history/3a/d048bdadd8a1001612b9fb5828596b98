@@ -177,6 +177,7 @@ float detecte5khZ(int ms)
 			sonActif = true;
 		}
 		else if(temps_signal >= ms){
+			LCD_ClearAndPrint("temps_signal = %f\n", temps_signal);
 			sonActif = false;
 			return (ms)	; // retourne le temps que le son à été émis
 		}
@@ -285,15 +286,12 @@ void boucleParcours(void)
 			break;
 		case STATE_FINISH:
 			LCD_ClearAndPrint("Fini");
-			MOTOR_SetSpeed(MOTOR_LEFT,0);
-			MOTOR_SetSpeed(MOTOR_RIGHT,0);
-			state = STATE_END;
 			break;
 
 		}
 
-		if(state != STATE_START && detecte5khZ(3000) >= 3000)
-				state = STATE_FINISH;
+		if(state != STATE_START && detecte5khZ(250) >= 250)
+				state = STATE_END;
 
 
 		//THREAD_MSleep(updateTime);
