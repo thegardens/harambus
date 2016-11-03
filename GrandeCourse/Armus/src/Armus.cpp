@@ -91,6 +91,9 @@ void resetRoue(infoRoue &roue);
 int call_suiveur(void);
 float detecte5khZ(void);
 
+void osc_couleur(int couleur);
+
+
 int math_ABS(int a);
 void initialisationEncodeurs(void);
 
@@ -158,20 +161,24 @@ void boucleParcours(void)
 
 
 	/*----Attente du départ----*/
-	while (detecte5khZ() < 1000 && !DIGITALIO_Read(BMP_FRONT))
+	/*while (detecte5khZ() < 1000 && !DIGITALIO_Read(BMP_FRONT))
 	{
 		THREAD_MSleep(100);
-	}
+	}*/
 
 
-	do
-	{
+	//do
+	//{
 
 		/*----Code du parcours en bas----*/
 
-		testCouleur();
+		//testCouleur();
+	while(1)
+	{
+	osc_couleur(testCouleur());
+	THREAD_MSleep(10);
 
-
+	}
 
 
 
@@ -181,17 +188,17 @@ void boucleParcours(void)
 		/*----Code du parcours en haut----*/
 /*----------------Gestion des moteurs-------------*/
 
-		THREAD_MSleep(updateTime);
+		/*THREAD_MSleep(updateTime);
 		//Mesures
 		MesureRoue(moteurGauche);
 		MesureRoue(moteurDroit);
 
 		//Correction
 		PidController(moteurGauche);
-		PidController(moteurDroit);
+		PidController(moteurDroit);*/
 		//AfficheRoue(moteurGauche);
 		//AfficheRoue(moteurDroit);
-	}while(detecte5khZ() < 3500);
+	//}while(detecte5khZ() < 3500);
 	//fin
 	MOTOR_SetSpeed(MOTOR_LEFT,0);
 	MOTOR_SetSpeed(MOTOR_RIGHT,0);
@@ -528,7 +535,7 @@ int testCouleur()
 
 				color_Read(red, blue, green, clear);
 				LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d,HUE=%f\n\n", red, green, blue, clear, hue);
-				THREAD_MSleep(50);
+				//THREAD_MSleep(50);
 				fin==1;
 
 
@@ -637,11 +644,6 @@ int testCouleur()
 				}
 			LCD_Printf("Couleur = %d\n",hueColor);
 			return hueColor;
-
-
-
-
-
 
 }
 
@@ -898,3 +900,33 @@ int color_Init(int& dev_handle)
 
 	return error;
 }
+
+
+void osc_couleur(int couleur)
+{
+	switch (couleur)
+	{
+	case 1: MOTOR_SetSpeed(MOTOR_RIGHT,-40);
+			MOTOR_SetSpeed(MOTOR_LEFT,-35);
+	break;
+
+	case 2: MOTOR_SetSpeed(MOTOR_RIGHT,-40);
+	 	 	MOTOR_SetSpeed(MOTOR_LEFT,-35);
+	break;
+
+	case 3: MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+			MOTOR_SetSpeed(MOTOR_LEFT,-40);
+	break;
+
+	case 4: MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+			MOTOR_SetSpeed(MOTOR_LEFT,-40);
+	break;
+	default: MOTOR_SetSpeed(MOTOR_RIGHT,-38);
+			 MOTOR_SetSpeed(MOTOR_LEFT,-40);
+	break;
+
+	}
+}
+
+
+
