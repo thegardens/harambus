@@ -102,10 +102,6 @@ int call_suiveur(void);
 float detecte5khZ(void);
 float detecte5khZ(int ms);
 
-unsigned int countCycleOsc=0;
-int countTest=0;
-bool flagFisrtPass=true;
-int lastColor=0;
 void osc_couleur(int couleur);
 
 
@@ -1006,99 +1002,28 @@ int color_Init(int& dev_handle)
 
 void osc_couleur(int couleur)
 {
-	int motorControl=35;
-
 	switch (couleur)
 	{
-	case 1: if(lastColor!=couleur)
-				countCycleOsc=0;
-			if(countCycleOsc<5)
-			{
-			MOTOR_SetSpeed(MOTOR_RIGHT,-40);
+	case 1: MOTOR_SetSpeed(MOTOR_RIGHT,-40);
 			MOTOR_SetSpeed(MOTOR_LEFT,-35);
-
-			}
-			else if(countCycleOsc>=5 && countCycleOsc<=10)
-			{
-
-				motorControl-=(countCycleOsc-5);
-				MOTOR_SetSpeed(MOTOR_RIGHT,-40);
-				MOTOR_SetSpeed(MOTOR_LEFT,(motorControl));
-			}
-			else if(countCycleOsc>10)
-			{
-				MOTOR_SetSpeed(MOTOR_RIGHT,-50);
-				MOTOR_SetSpeed(MOTOR_LEFT,-50);
-			}
 	break;
 
-	case 2: if(lastColor!=couleur)
-				countCycleOsc=0;
-			if(countCycleOsc<5)
-			{
-			MOTOR_SetSpeed(MOTOR_RIGHT,-40);
-			MOTOR_SetSpeed(MOTOR_LEFT,-35);
-			}
-			else if(countCycleOsc>=5 && countCycleOsc<=10)
-			{
-				motorControl-=(countCycleOsc-5);
-				MOTOR_SetSpeed(MOTOR_RIGHT,-40);
-				MOTOR_SetSpeed(MOTOR_LEFT,(motorControl));
-			}
-			else if(countCycleOsc>10)
-			{
-				MOTOR_SetSpeed(MOTOR_RIGHT,-50);
-				MOTOR_SetSpeed(MOTOR_LEFT,-50);
-			}
+	case 2: MOTOR_SetSpeed(MOTOR_RIGHT,-40);
+	 	 	MOTOR_SetSpeed(MOTOR_LEFT,-35);
 	break;
 
-	case 3:  if(lastColor!=couleur)
-				countCycleOsc=0;
-			if(countCycleOsc<5)
-			{
-			MOTOR_SetSpeed(MOTOR_RIGHT,-40);
-			MOTOR_SetSpeed(MOTOR_LEFT,-35);
-			}
-			else if(countCycleOsc>=5 && countCycleOsc<=10)
-			{
-				motorControl-=(countCycleOsc-5);
-				MOTOR_SetSpeed(MOTOR_RIGHT,motorControl);
-				MOTOR_SetSpeed(MOTOR_LEFT,(-40));
-			}
-			else if(countCycleOsc>10)
-			{
-				MOTOR_SetSpeed(MOTOR_RIGHT,-50);
-				MOTOR_SetSpeed(MOTOR_LEFT,-50);
-			}
+	case 3: MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+			MOTOR_SetSpeed(MOTOR_LEFT,-40);
 	break;
 
-	case 4: if(lastColor!=couleur)
-				countCycleOsc=0;
-			if(countCycleOsc<5)
-			{
-			MOTOR_SetSpeed(MOTOR_RIGHT,-40);
-			MOTOR_SetSpeed(MOTOR_LEFT,-35);
-			}
-			else if(countCycleOsc>=5 && countCycleOsc<=10)
-			{
-				motorControl-=(countCycleOsc-5);
-				MOTOR_SetSpeed(MOTOR_RIGHT,motorControl);
-				MOTOR_SetSpeed(MOTOR_LEFT,(-40));
-			}
-			else if(countCycleOsc>10)
-			{
-				MOTOR_SetSpeed(MOTOR_RIGHT,-50);
-				MOTOR_SetSpeed(MOTOR_LEFT,-50);
-			}
+	case 4: MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+			MOTOR_SetSpeed(MOTOR_LEFT,-40);
 	break;
-	default: MOTOR_SetSpeed(MOTOR_RIGHT,-50);
-			 MOTOR_SetSpeed(MOTOR_LEFT,-50);
+	default: MOTOR_SetSpeed(MOTOR_RIGHT,-38);
+			 MOTOR_SetSpeed(MOTOR_LEFT,-40);
 	break;
 
 	}
-	countCycleOsc++;
-	lastColor = couleur;
-
 }
 
 
