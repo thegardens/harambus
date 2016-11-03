@@ -102,10 +102,6 @@ int call_suiveur(void);
 float detecte5khZ(void);
 float detecte5khZ(int ms);
 
-unsigned int countCycleOsc=0;
-int countTest=0;
-bool flagFisrtPass=true;
-int lastColor=0;
 void osc_couleur(int couleur);
 
 
