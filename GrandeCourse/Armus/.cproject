@@ -27,13 +27,13 @@
 								</inputType>
 							</tool>
 							<tool id="armus.toolchain.cc.compiler.1696934146" name="ARM-Linux C++ Compiler" superClass="armus.toolchain.cc.compiler">
-								<option id="armus.cc.compiler.includepaths.24663347" superClass="armus.cc.compiler.includepaths" valueType="includePath">
+								<option id="armus.cc.compiler.includepaths.24663347" name="Additionnal Include Paths (-I)" superClass="armus.cc.compiler.includepaths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:/Users/phili/Documents/GitHub/harambus/Armus/Armus/include&quot;"/>
 								</option>
-								<option id="armus.cc.compiler.armuslibs.path.1083764763" superClass="armus.cc.compiler.armuslibs.path" valueType="includePath">
+								<option id="armus.cc.compiler.armuslibs.path.1083764763" name="LibARMus Include Path" superClass="armus.cc.compiler.armuslibs.path" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files (x86)/ArmusIDE/librairie/include&quot;"/>
 								</option>
-								<option id="armuc.cc.compiler.includes.1894838959" superClass="armuc.cc.compiler.includes" valueType="includePath">
+								<option id="armuc.cc.compiler.includes.1894838959" name="Standard Includes" superClass="armuc.cc.compiler.includes" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files (x86)/ArmusIDE/toolchain/sysroot/usr/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files (x86)/ArmusIDE/toolchain/sysroot/usr/include/c++/4.2.4/&quot;"/>
 								</option>
@@ -41,6 +41,7 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="org.armus.plugin.arm-softfloat-linux-gnueabi.exe.debug.359127621.1087740796" name="grandecourse.h" rcbsApplicability="disable" resourcePath="src/grandecourse.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="include"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
@@ -57,4 +58,9 @@
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/Armus"/>
+		</configuration>
+	</storageModule>
 </cproject>
