@@ -11,6 +11,7 @@
 
 #include <libarmus.h>
 #include "grandecourse.h"
+#include "Jeu.h"
 
 
 // Global Functions
@@ -22,8 +23,9 @@
 
 int main()
 {
-	boucleParcours();
-	//TODO: thread pour jammer les autres avec le capteur infrarouge
+
+	boucleJeu();
+
 
 	return 0;
 }
