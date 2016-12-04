@@ -117,8 +117,8 @@ void avanceCase(int nbCase)
 			int echantillonage = testCouleur();
 			if(couleur != echantillonage)
 			{
-				LCD_ClearAndPrint("Case passee : %d",casePasser);
 				casePasser++;
+				LCD_ClearAndPrint("Case passee : %d",casePasser);
 				couleur = echantillonage;
 			}
 		}
