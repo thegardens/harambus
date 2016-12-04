@@ -12,7 +12,7 @@
 #include <libarmus.h>
 #include "grandecourse.h"
 #include "Jeu.h"
-
+#include "communication.h"
 
 // Global Functions
 
@@ -25,7 +25,6 @@ int main()
 {
 
 	boucleJeu();
-
 
 	return 0;
 }

@@ -128,7 +128,7 @@ void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 	adjd_SetRegister(ADJD_REG_CTRL, 1 << CTRL_GOFS);
 	while(adjd_ReadRegister(ADJD_REG_CTRL))
 	{
-		THREAD_MSleep(50);
+		THREAD_MSleep(1);
 	}
 
 	//lecture avec eclairage
@@ -136,7 +136,7 @@ void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 	adjd_SetRegister(ADJD_REG_CTRL, 1 << CTRL_GSSR);
 	while(adjd_ReadRegister(ADJD_REG_CTRL))
 	{
-		THREAD_MSleep(50);
+		THREAD_MSleep(1);
 	}
 
 	//eteindre la led
@@ -155,7 +155,7 @@ void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& 
 	adjd_SetRegister(ADJD_REG_CTRL, 1 << CTRL_GSSR);
 	while(adjd_ReadRegister(ADJD_REG_CTRL))
 	{
-		THREAD_MSleep(50);
+		THREAD_MSleep(1);
 	}
 	led_TurnOff();
 
@@ -295,7 +295,7 @@ int testCouleur()
 
 
 				color_Read(red, blue, green, clear);
-				LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d,HUE=%f\n\n", red, green, blue, clear, hue);
+
 				//THREAD_MSleep(50);
 				fin==1;
 
@@ -347,7 +347,7 @@ int testCouleur()
 					hue =hue + 360;
 				}
 
-
+				//LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d,HUE=%f\n\n", red, green, blue, clear, hue);
 
 				/*while(fin==1);
 				{
@@ -403,7 +403,7 @@ int testCouleur()
 				{
 					hueColor=6;
 				}
-			LCD_Printf("Couleur = %d\n",hueColor);
+			//LCD_Printf("Couleur = %d\n",hueColor);
 			return hueColor;
 
 }

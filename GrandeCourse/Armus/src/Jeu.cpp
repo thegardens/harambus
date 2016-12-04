@@ -7,9 +7,11 @@
 #include "Jeu.h"
 #include <libarmus.h>
 #include "suiveurligne.h"
+#include "constante.h"
+#include "capteurcouleur.h"
 
-
-struct questionnaire tab_questions[4];
+int const nbMaxQuestions = 50;
+struct questionnaire tab_questions[nbMaxQuestions]; //TODO: Mettre dynamique
 
 
 void boucleJeu()
@@ -77,11 +79,12 @@ void boucleJeu()
 
 		case STATE_DE:
 			resultatDe = random_dice();
+
 			THREAD_MSleep(1000);
 			state = STATE_AVANCE;
 			break;
 		case STATE_AVANCE:
-			//avanceCase(resultatDe);
+			avanceCase(resultatDe);
 			state = STATE_ATTENTE;
 			break;
 
@@ -103,9 +106,31 @@ void boucleJeu()
 
 void avanceCase(int nbCase)
 {
-	while (1)
+	int casePasser = 0;
+	int i = 0;
+	int couleur = testCouleur();
+	while (nbCase > casePasser)
+	{
 		ajust_path();
+		if(i % 6 == 0)
+		{
+			int echantillonage = testCouleur();
+			if(couleur != echantillonage)
+			{
+				LCD_ClearAndPrint("Case passee : %d",casePasser);
+				casePasser++;
+				couleur = echantillonage;
+			}
+		}
+		else
+		{
+			THREAD_MSleep(100);
+		}
 
+		i++;
+	}
+	MOTOR_SetSpeed(MOTOR_LEFT,0);
+	MOTOR_SetSpeed(MOTOR_RIGHT,0);
 }
 
 int random_dice()
@@ -124,7 +149,7 @@ int random_dice()
 
 	if (ans==1)
 	{
-		LCD_ClearAndPrint("");
+
 
 		LCD_Printf("         ___________\n");
 		LCD_Printf("        |           |\n");
@@ -136,7 +161,7 @@ int random_dice()
 	}
 	if (ans==2)
 	{
-		LCD_ClearAndPrint("");
+
 
 		LCD_Printf("         ___________\n");
 		LCD_Printf("        |           |\n");
@@ -148,7 +173,7 @@ int random_dice()
 	}
 	if (ans==3)
 	{
-		LCD_ClearAndPrint("");
+
 
 		LCD_Printf("         ___________\n");
 		LCD_Printf("        |           |\n");
@@ -159,7 +184,7 @@ int random_dice()
 	}
 	if (ans==4)
 	{
-		LCD_ClearAndPrint("");
+
 
 		LCD_Printf("         ___________\n");
 		LCD_Printf("        |           |\n");
@@ -171,7 +196,7 @@ int random_dice()
 
 	if (ans==5)
 	{
-		LCD_ClearAndPrint("");
+
 
 		LCD_Printf("         ___________\n");
 		LCD_Printf("        |           |\n");
@@ -182,7 +207,7 @@ int random_dice()
 	}
 	if (ans==0 || ans==6)
 	{
-		LCD_ClearAndPrint("");
+
 
 		LCD_Printf("         ___________\n");
 		LCD_Printf("        |           |\n");
@@ -201,18 +226,20 @@ int random_dice()
 }
 
 
-int gestion_questions(char fichier_question[],struct questionnaire liste[4]){
+int gestion_questions(char fichier_question[],struct questionnaire liste[nbMaxQuestions]){
 
 	FILE* fichier_i;
 	fichier_i= fopen(fichier_question,"r");
 	int i = 0;
-	char v_string[255];
+	char v_string[nbMaxQuestions];
 
 	if(fichier_i==NULL){
+
 	return 0;
 	}
 
-	for(i=0;i<4;i++){
+	while(!feof(fichier_i))
+	{
 		fgets(v_string,sizeof(v_string),fichier_i);
 		strcpy(liste[i].enonce,v_string);
 		fgets(v_string,sizeof(v_string),fichier_i);
@@ -225,10 +252,11 @@ int gestion_questions(char fichier_question[],struct questionnaire liste[4]){
 		strcpy(liste[i].reponse4,v_string);
 		fgets(v_string,sizeof(v_string),fichier_i);
 		strcpy(liste[i].bonne_reponse,v_string);
+
+		i++;
 	}
 
 	fclose(fichier_i);
-
 	return 1;
 
 }

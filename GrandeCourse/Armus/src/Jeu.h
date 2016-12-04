@@ -25,15 +25,12 @@ struct questionnaire{
 #define STATE_FIN		5
 
 //MACRO tout court
-#define BOUTON_1		16
-#define BOUTON_2		15
-#define BOUTON_3		14
-#define BOUTON_4		13
+
 
 //SIGNATURE FONCTIONS
 void boucleJeu();
 int random_dice();
-int gestion_questions(char fichier_question[],struct questionnaire liste[4]);
+int gestion_questions(char fichier_question[],struct questionnaire liste[]);
 int waitButtonInteraction();
 void avanceCase(int nbCase);
 

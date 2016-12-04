@@ -7,7 +7,7 @@
 
 #include "suiveurligne.h"
 #include <libarmus.h>
-
+#include "constante.h"
 
 int call_suiveur()   //fonction qui détecte ou est situer le noir
 {
@@ -15,9 +15,9 @@ int call_suiveur()   //fonction qui détecte ou est situer le noir
 	int right;
 	int center;
 	int left;
-	right = DIGITALIO_Read(9);
-	center = DIGITALIO_Read(10) * 10;
-	left = DIGITALIO_Read(11) * 100;
+	right = DIGITALIO_Read(SUIVEUR_GAUCHE);
+	center = DIGITALIO_Read(SUIVEUR_CENTRE) * 10;
+	left = DIGITALIO_Read(SUIVEUR_DROIT) * 100;
 
 	int balance;
 	balance = right + center + left;
@@ -36,7 +36,7 @@ int ajust_path()
 
 
 	suiveur = call_suiveur();
-			LCD_Printf("suiveur = %d\n",suiveur);
+			//LCD_Printf("suiveur = %d\n",suiveur);
 
 			switch(suiveur)
 			{
@@ -48,7 +48,7 @@ int ajust_path()
 							//LCD_Printf("CAS 0");
 							break;
 						case 1 :
-							MOTOR_SetSpeed(MOTOR_RIGHT,-35);
+							MOTOR_SetSpeed(MOTOR_RIGHT,15);
 							MOTOR_SetSpeed(MOTOR_LEFT,30);
 							//Tourner(10,0,GAUCHE);
 							//LCD_Printf("Tourne à gauche\n");
@@ -63,7 +63,7 @@ int ajust_path()
 							break;
 						case 100:
 							MOTOR_SetSpeed(MOTOR_RIGHT,35);
-							MOTOR_SetSpeed(MOTOR_LEFT,-35);
+							MOTOR_SetSpeed(MOTOR_LEFT,15);
 							//Tourner(10,0,DROIT);
 							//LCD_Printf("Tourne à droite\n");
 							//LCD_Printf("CAS 100");
