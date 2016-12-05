@@ -22,7 +22,8 @@ struct questionnaire{
 #define STATE_DE		2
 #define STATE_AVANCE	3
 #define STATE_ATTENTE	4
-#define STATE_FIN		5
+#define STATE_GAGNANT	5
+#define STATE_PERDANT	6
 
 //MACRO tout court
 

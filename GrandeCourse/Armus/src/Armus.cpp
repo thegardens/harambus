@@ -23,10 +23,10 @@
 
 int main()
 {
-
-	boucleJeu();
-	//BTsendState(4);
-	/*while (1)
+	THREAD_MSleep(500);
+	 boucleJeu();
+	/*BTsendState(0);
+	while (1)
 	{
 		LCD_ClearAndPrint("Valeur : %d",BTreadState());
 		THREAD_MSleep(1000);
