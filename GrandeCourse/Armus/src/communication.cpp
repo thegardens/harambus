@@ -29,15 +29,10 @@ void BTsendState(int state)
 
 int BTreadState(void)
 {
-	//float comm = ANALOG_Read(ARDUINO);
-	float comm = 1023;
-	comm /= 1023/8.0 ;
-	float reste = comm - (int)comm;
-	if(reste >= 0.5)
-		comm = (int)comm +1;
-	else
-		comm = (int)comm;
-	//manque conversion en deca
+	int bit1 = DIGITALIO_Read(ARDUINO_BIT_1);
+	int bit2 = DIGITALIO_Read(ARDUINO_BIT_2);
+	int bit3 = DIGITALIO_Read(ARDUINO_BIT_3);
 
-	return comm;
+	return (bit3 * 4 + 2 * bit2 + bit1);
+
 }

@@ -74,6 +74,8 @@ void boucleParcours(void)
 
 		switch (state)
 		{
+
+
 		case STATE_START:
 			LCD_ClearAndPrint("Wait...");
 			if(detecte5khZ(250) >= 250)
@@ -81,6 +83,8 @@ void boucleParcours(void)
 				state = STATE_FIRST_TURN;
 			}
 			break;
+
+
 		case STATE_DEBUT_DROIT:
 				LCD_ClearAndPrint("Debut Droit");
 			osc_couleur(testCouleur());
@@ -96,6 +100,9 @@ void boucleParcours(void)
 				}
 
 				break;
+
+
+
 		case STATE_FIRST_TURN:
 			LCD_ClearAndPrint("First turn");
 			osc_couleur(testCouleur());
@@ -112,6 +119,9 @@ void boucleParcours(void)
 					state = STATE_TAPIS;
 			}
 			break;
+
+
+
 		case STATE_TAPIS:
 			LCD_ClearAndPrint("Tapis");
 			MOTOR_SetSpeed(MOTOR_RIGHT,-50);
@@ -126,6 +136,8 @@ void boucleParcours(void)
 				state = STATE_MURET;
 			}
 			break;
+
+
 		case STATE_MURET:
 
 			LCD_ClearAndPrint("Muret");

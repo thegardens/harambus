@@ -9,6 +9,7 @@
 #include "suiveurligne.h"
 #include "constante.h"
 #include "capteurcouleur.h"
+#include "son.h"
 
 int const nbMaxQuestions = 50;
 struct questionnaire tab_questions[nbMaxQuestions]; //TODO: Mettre dynamique
@@ -27,12 +28,18 @@ void boucleJeu()
 
 		switch (state)
 		{
+
+
+
 		case STATE_DEBUT:
 			LCD_ClearAndPrint("Bienvenue au jeu de harambus\n");
 			LCD_Printf("Appuyer sur un bouton...");
 			waitButtonInteraction();
+			Play_Song("Debut.wav");
 			state = STATE_QUESTION;
 			break;
+
+
 
 
 		case STATE_QUESTION:
@@ -69,9 +76,13 @@ void boucleJeu()
 			{
 				state = STATE_ATTENTE;
 				LCD_Printf("MAUVAISE REPONSE loser\n");
+				Play_Song("Mal.wav");
 			}
 			else
+			{
 				LCD_Printf("BONNE REPONSE\n");
+				Play_Song("Bon.wav");
+			}
 
 			THREAD_MSleep(2000);
 			break;
@@ -83,19 +94,35 @@ void boucleJeu()
 			THREAD_MSleep(1000);
 			state = STATE_AVANCE;
 			break;
+
+
+
+
 		case STATE_AVANCE:
 			avanceCase(resultatDe);
 			state = STATE_ATTENTE;
 			break;
 
+
+
+
 		case STATE_ATTENTE:
 			nbTours++;
+			SYSTEM_ResetTimer(); // empèche un overflow du timer
+
 			LCD_ClearAndPrint("Appuyer sur un bouton...");
 			waitButtonInteraction();
 			state = STATE_QUESTION;
+
+			Play_Song("Tour.wav");
+
 			break;
 
+
+
+
 		case STATE_FIN:
+			Play_Song("Win.wav");
 			LCD_ClearAndPrint("ON A GAGNE!!!");
 			break;
 		}
@@ -263,15 +290,16 @@ int gestion_questions(char fichier_question[],struct questionnaire liste[nbMaxQu
 
 int waitButtonInteraction()
 {
+	int threshold = 700;
 	while(1)
 	{
-		if(DIGITALIO_Read(BOUTON_1))
+		if(ANALOG_Read(BOUTON_1) > threshold)
 			return 1;
-		if(DIGITALIO_Read(BOUTON_2))
+		if(ANALOG_Read(BOUTON_2) > threshold)
 			return 2;
-		if(DIGITALIO_Read(BOUTON_3))
+		if(ANALOG_Read(BOUTON_3) > threshold)
 			return 3;
-		if(DIGITALIO_Read(BOUTON_4))
+		if(ANALOG_Read(BOUTON_4) > threshold)
 			return 4;
 		THREAD_MSleep(100);
 	}
