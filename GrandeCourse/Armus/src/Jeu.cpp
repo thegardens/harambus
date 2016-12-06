@@ -25,9 +25,10 @@ void boucleJeu()
 	int resultatDe;
 	int nbTours = 1;
 	int caseParcourue = 0;
+	bool running = true;
 	gestion_questions("media/usb0/ARMUS/question.txt", tab_questions);
 	BTsendState(state);
-	while(1)
+	while(running )
 	{
 
 		switch (state)
@@ -115,7 +116,7 @@ void boucleJeu()
 
 			THREAD_MSleep(1000);
 			state = STATE_AVANCE;
-			caseParcourue += resultatDe;
+
 			BTsendState(state);
 			break;
 
@@ -131,6 +132,7 @@ void boucleJeu()
 			}
 
 			avanceCase(resultatDe);
+			caseParcourue += resultatDe;
 			if(state != STATE_GAGNANT)
 				state = STATE_ATTENTE;
 
@@ -165,7 +167,7 @@ void boucleJeu()
 				{
 					state = STATE_PERDANT;
 				}
-				//TODO if de sortie fin
+
 				BTsendState(state);
 				THREAD_MSleep(300);
 			}
@@ -177,24 +179,27 @@ void boucleJeu()
 		case STATE_GAGNANT:
 			LCD_PrintBmp("Victoire.bmp");
 			Play_Song("Win.wav");
-			LCD_ClearAndPrint("ON A GAGNE!!!");
+			//LCD_ClearAndPrint("ON A GAGNE!!!");
 
 			BTsendState(state);
+			running = false; // fin de jeu retour au main
 			break;
 
 
 		case STATE_PERDANT:
 					LCD_PrintBmp("Perdu.bmp");
 					Play_Song("Perd.wav");
-					LCD_ClearAndPrint("ON A Perdu!!!");
+					//LCD_ClearAndPrint("ON A Perdu!!!");
 
 					BTsendState(state);
+					running = false; // fin de jeu retour au main
 					break;
 		}
 
 		//LCD_ClearAndPrint("State: %d\nState autre joueur : %d", state, BTreadState());
-		THREAD_MSleep(1000);
+		THREAD_MSleep(750);
 	}
+	THREAD_MSleep(3000);
 
 }
 
@@ -203,14 +208,20 @@ void avanceCase(int nbCase)
 {
 	int casePasser = 0;
 	int i = 0;
-	int couleur = testCouleur();
+	int couleur;
+	do
+	{
+		couleur = testCouleur();
+
+	}while (couleur != 2 && couleur != 4);
+
 	while (nbCase > casePasser)
 	{
 		ajust_path();
 		if(i % 6 == 0)
 		{
 			int echantillonage = testCouleur();
-			if(couleur != echantillonage)
+			if(couleur != echantillonage && (echantillonage == 2 || echantillonage == 4))
 			{
 				casePasser++;
 				LCD_ClearAndPrint("Case passee : %d",casePasser);

@@ -383,7 +383,7 @@ int testCouleur()
 				{
 					hueColor=3;
 				}
-				else if (hue>=100 && hue <=135)
+				else if ((hue>=76 && hue <=155 )|| hue == 360)
 				{
 					hueColor=2;
 				}
@@ -391,11 +391,11 @@ int testCouleur()
 				{
 					hueColor=1;
 				}
-				else if (hue>=40 && hue <=57)
+				else if (hue>=26 && hue <=70)
 				{
 					hueColor=4;
 				}
-				else if (hue>=60 && hue <=70)
+				else if (hue>=71 && hue <=75)
 				{
 					hueColor=5;
 				}

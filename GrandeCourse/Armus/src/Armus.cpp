@@ -24,7 +24,23 @@
 int main()
 {
 	THREAD_MSleep(500);
-	 boucleJeu();
+	bool running = true;
+	do
+	{
+		 boucleJeu();
+		 LCD_ClearAndPrint("Voulez-vous continuer jouer?\n\t1) oui\n\t2) non");
+
+		 int choix;
+		 do
+		 {
+		  choix = waitButtonInteraction();
+
+		 }while (choix != 1 && choix != 2);
+		 if (choix == 2)
+		 {
+			 running = false;
+		 }
+	}while (running);
 	/*BTsendState(0);
 	while (1)
 	{
