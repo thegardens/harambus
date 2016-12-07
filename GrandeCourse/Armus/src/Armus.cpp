@@ -28,7 +28,7 @@ int main()
 	do
 	{
 		 boucleJeu();
-		 LCD_ClearAndPrint("Voulez-vous continuer jouer?\n\t1) oui\n\t2) non");
+		 LCD_ClearAndPrint("Voulez-vous continuer jouer?\n    1) Oui\n   2) Non");
 
 		 int choix;
 		 do

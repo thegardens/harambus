@@ -13,7 +13,7 @@
 #include "communication.h"
 
 int const nbMaxQuestions = 50;
-int const nbCaseAParcourir = 10;
+int nbCaseAParcourir = 10;
 struct questionnaire tab_questions[nbMaxQuestions]; //TODO: Mettre dynamique
 
 
@@ -27,7 +27,28 @@ void boucleJeu()
 	int caseParcourue = 0;
 	bool running = true;
 	gestion_questions("media/usb0/ARMUS/question.txt", tab_questions);
-	BTsendState(state);
+
+	/// Mode 1 joueur ou 2 joueur
+	bool is2Player = true;
+	LCD_ClearAndPrint("Voulez-vous jouer a deux joueurs??\n    1) Oui\n   2) Non");
+
+	 int choix;
+	 do
+	 {
+	  choix = waitButtonInteraction();
+
+	 }while (choix != 1 && choix != 2);
+
+	 if (choix == 2)
+	 {
+		 is2Player = false;
+		 nbCaseAParcourir = nbCaseAParcourir * 2 + 1;
+	 }
+
+// début jeu
+	BTsendState(state, is2Player);
+
+
 	while(running )
 	{
 
@@ -38,39 +59,45 @@ void boucleJeu()
 
 		case STATE_DEBUT:
 			SYSTEM_ResetTimer(); // empèche un overflow du timer
-			//LCD_ClearAndPrint("");
-			//LCD_ClearAndPrint("Bienvenue au jeu de harambus\n");
-			//LCD_Printf("Appuyer sur un bouton pour COMMENCER");
+
 
 			LCD_PrintBmp("Debut.bmp");
 
 			waitButtonInteraction();
-			if(BTreadState() == STATE_DEBUT)
+			if(BTreadState(is2Player) == STATE_DEBUT)
 			{
 				state = STATE_ATTENTE;
 				nbTours--;
 			}
-			else if(BTreadState() == STATE_ATTENTE)
+			else if(BTreadState(is2Player) == STATE_ATTENTE || !is2Player)
 			{
 				Play_Song("Debut.wav");
 				state = STATE_QUESTION;
 
 			}
-			BTsendState(state);
+			BTsendState(state, is2Player);
 			break;
 
 
 
 
 		case STATE_QUESTION:
-			LCD_ClearAndPrint("Questions #%d\n",nbTours);
+			//LCD_ClearAndPrint("Questions #%d\n",nbTours);
+			LCD_Printf(tab_questions[nbTours-1].enonce);
+			LCD_PrintBmp(tab_questions[nbTours-1].enonce);
+
+
 			int choix;
 
-			LCD_Printf("%s", tab_questions[nbTours-1].enonce);
+			//strcpy(question,tab_questions[nbTours-1].enonce);
+			//LCD_PrintBmp(question);
+
+/*			LCD_Printf("%s", tab_questions[nbTours-1].enonce);
 			LCD_Printf("1 : %s", tab_questions[nbTours-1].reponse1);
 			LCD_Printf("2 : %s", tab_questions[nbTours-1].reponse2);
 			LCD_Printf("3 : %s", tab_questions[nbTours-1].reponse3);
 			LCD_Printf("4 : %s", tab_questions[nbTours-1].reponse4);
+			*/
 			choix = waitButtonInteraction();
 
 			switch (choix){
@@ -107,7 +134,7 @@ void boucleJeu()
 
 			THREAD_MSleep(1000);
 
-			BTsendState(state);
+			BTsendState(state, is2Player);
 			break;
 
 
@@ -117,7 +144,7 @@ void boucleJeu()
 			THREAD_MSleep(1000);
 			state = STATE_AVANCE;
 
-			BTsendState(state);
+			BTsendState(state, is2Player);
 			break;
 
 
@@ -136,7 +163,7 @@ void boucleJeu()
 			if(state != STATE_GAGNANT)
 				state = STATE_ATTENTE;
 
-			BTsendState(state);
+			BTsendState(state, is2Player);
 			break;
 
 
@@ -149,26 +176,26 @@ void boucleJeu()
 			LCD_PrintBmp("Tour.bmp");
 			//LCD_ClearAndPrint("Appuyer sur un bouton...");
 			//waitButtonInteraction();
-			while (BTreadState() != STATE_QUESTION)
+			while (BTreadState() != STATE_QUESTION && is2Player)
 			{
 				BTsendState(state);
 				THREAD_MSleep(300);
 				//LCD_ClearAndPrint("State: %d\nState autre joueur : %d", state, BTreadState());
 			}
 			while (state != STATE_QUESTION && state != STATE_PERDANT){
-				if(BTreadState()==STATE_ATTENTE)
+				if(BTreadState(is2Player)==STATE_ATTENTE || !is2Player)
 				{
 					nbTours += 2;
 					state = STATE_QUESTION;
 					Play_Song("Tour.wav");
 
 				}
-				if(BTreadState()==STATE_GAGNANT)
+				if(BTreadState(is2Player)==STATE_GAGNANT)
 				{
 					state = STATE_PERDANT;
 				}
 
-				BTsendState(state);
+				BTsendState(state, is2Player);
 				THREAD_MSleep(300);
 			}
 			break;
@@ -181,7 +208,7 @@ void boucleJeu()
 			Play_Song("Win.wav");
 			//LCD_ClearAndPrint("ON A GAGNE!!!");
 
-			BTsendState(state);
+			BTsendState(state, is2Player);
 			running = false; // fin de jeu retour au main
 			break;
 
@@ -191,7 +218,7 @@ void boucleJeu()
 					Play_Song("Perd.wav");
 					//LCD_ClearAndPrint("ON A Perdu!!!");
 
-					BTsendState(state);
+					BTsendState(state, is2Player);
 					running = false; // fin de jeu retour au main
 					break;
 		}
@@ -354,7 +381,28 @@ int gestion_questions(char fichier_question[],struct questionnaire liste[nbMaxQu
 	while(!feof(fichier_i))
 	{
 		fgets(v_string,sizeof(v_string),fichier_i);
+		//////////////// enleve  '\n'  \\\\\\\\\\\\\\\\\\\\\\\
+
+		int j=0;
+		while(v_string[j] != '\n')
+		{
+			j++;
+
+		}
+		v_string[(j-1)] = '\0';
+
+
 		strcpy(liste[i].enonce,v_string);
+		//////////////// enleve  '\n'  \\\\\\\\\\\\\\\\\\\\\\\
+
+		/*int j=0;
+		while(liste[i].enonce[j] != "\n")
+		{
+			j++;
+
+		}
+
+		 */
 		fgets(v_string,sizeof(v_string),fichier_i);
 		strcpy(liste[i].reponse1,v_string);
 		fgets(v_string,sizeof(v_string),fichier_i);

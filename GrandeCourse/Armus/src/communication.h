@@ -10,9 +10,9 @@
 
 
 
-void BTsendState(int state);
+void BTsendState(int state, bool is2Joueurs = true);
 
-int BTreadState(void);
+int BTreadState( bool is2Joueurs = true);
 
 
 #endif /* COMMUNICATION_H_ */
